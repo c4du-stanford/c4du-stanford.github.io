@@ -44,6 +44,9 @@ table { border-collapse:collapse; font-size:14px; }
 th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; vertical-align:top; }
 th { background:var(--side); }
 img { max-width:100%; height:auto; border-radius:8px; }
+/* The flowchart is drawn light-on-dark: inverted for the light theme. */
+:root[data-theme="light"] img.diagram { filter: invert(1) hue-rotate(180deg); }
+@media (prefers-color-scheme: light) { :root:not([data-theme]) img.diagram { filter: invert(1) hue-rotate(180deg); } }
 .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; margin:18px 0; }
 .card { display:block; border:1px solid var(--line); border-radius:10px; padding:14px 16px; text-decoration:none; color:var(--fg); background:var(--side); }
 .card b { display:block; color:var(--accent); margin-bottom:4px; }

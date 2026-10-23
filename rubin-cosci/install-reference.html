@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Installing · CoSci</title>
-<link rel="stylesheet" href="style.css?v=7f7c8c2971">
-<script>try{var t=localStorage.getItem('cosci.theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+<link rel="stylesheet" href="style.css?v=8430ec67eb">
+<script>var t='dark';try{t=localStorage.getItem('cosci.theme')||'dark';}catch(e){}if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);</script>
 </head>
 <body>
 <header class="top"><div class="in">
@@ -68,7 +68,7 @@
 <p><code>--private</code>, <code>--create-private</code>, <code>--shared</code>, <code>--create-shared</code>, <code>--local</code>, <code>--handle</code>, <code>--git-name</code>, <code>--git-email</code>, <code>--install-root</code>, <code>--data-root</code>, <code>--learn claude|codex|off</code>, <code>--timezone</code>, <code>--protocol https|ssh</code>, <code>--no-link</code>, <code>--no-path</code>, <code>--agent claude|codex|both|none</code>, <code>--terminal</code>, <code>--yes</code> (<code>-y</code>, <code>--no-input</code>) and <code>--install-url</code>.</p>
 <p>Re-running the installer keeps your labs and settings. <code>--local</code> can't be combined with <code>--create-shared</code>. For the full text, run <code>bash cosci-install.sh --help</code>.</p>
 <p>See <a href="configuration.html">configuration</a> for paths and settings, and <a href="troubleshooting.html">troubleshooting</a> for problems.</p>
-<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.200928), the same guides that come with CoSci.</p>
+<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.201218), the same guides that come with CoSci.</p>
 </main>
 <aside class="toc"><b>On this page</b><a class="l3" href="#where-to-get-the-installer">Where to get the installer</a><a class="l3" href="#why-terminal-not-a-double-click-app">Why Terminal, not a double-click app</a><a class="l3" href="#the-guided-install-and---yes">The guided install and --yes</a><a class="l3" href="#coscis-python-environment">CoSci&#x27;s Python environment</a><a class="l3" href="#starting-a-project">Starting a project</a><a class="l3" href="#your-private-lab-on-github">Your private lab on GitHub</a><a class="l3" href="#installing-from-a-clone">Installing from a clone</a><a class="l3" href="#no-github-at-all">No GitHub at all</a><a class="l3" href="#all-options">All options</a></aside>
 </div>
@@ -83,7 +83,7 @@
   b.addEventListener('click',function(){
     var n=order[(order.indexOf(cur())+1)%3];
     if(n==='auto') root.removeAttribute('data-theme'); else root.setAttribute('data-theme',n);
-    try{ if(n==='auto') localStorage.removeItem('cosci.theme'); else localStorage.setItem('cosci.theme',n);}catch(e){}
+    try{ localStorage.setItem('cosci.theme',n);}catch(e){}
     show();
   });
   show();
