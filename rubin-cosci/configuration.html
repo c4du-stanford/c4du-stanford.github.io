@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Configuration · CoSci</title>
 <link rel="stylesheet" href="style.css?v=8430ec67eb">
-<script>var t='dark';try{t=localStorage.getItem('cosci.theme')||'dark';}catch(e){}if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);</script>
+<script>var t='light';try{t=localStorage.getItem('cosci.theme')||'light';}catch(e){}if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);</script>
 </head>
 <body>
 <header class="top"><div class="in">
@@ -119,7 +119,7 @@ cosci join local/papers --private</code></pre>
 <p>You may set these in the shell you start <code>cosci</code> from:</p>
 <div class="table"><table><thead><tr><th>Variable</th><th>Meaning</th></tr></thead><tbody><tr><td><code>COSCI_PYTHON</code></td><td>A Python of your own that runs cosci and its server, used as it is; it must have PyYAML. Default: CoSci's own environment, <code>~/.cosci/venv/bin/python</code> (or <code>python3</code> on your PATH when there is none).</td></tr><tr><td><code>COSCI_GH</code></td><td>The <code>gh</code> cosci's git commands sign in to GitHub through. The installer remembers its choice as <code>gh</code> in <code>settings.json</code>, so you rarely set this.</td></tr><tr><td><code>COSCI_CLAUDE</code>, <code>COSCI_CODEX</code></td><td>The <code>claude</code> or <code>codex</code> executable to start, when not the one on your PATH.</td></tr><tr><td><code>COSCI_GIT_TIMEOUT</code></td><td>Seconds a clone or fetch by <code>install.sh</code>, <code>cosci join</code> or <code>cosci status --fetch</code> may take (default 300).</td></tr><tr><td><code>COSCI_NO_PULL</code></td><td><code>1</code> to never fetch: reads and writes use the clones as they are.</td></tr><tr><td><code>COSCI_FRESHEN_EVERY</code></td><td>Seconds between fetches of one clone before a read (default 60).</td></tr><tr><td><code>COSCI_PROMPT_CONTEXT_SECONDS</code></td><td>How long the prompt hook waits for the knowledge base's context (default 30).</td></tr><tr><td><code>COSCI_LEARN_MODEL</code></td><td>The model the learner asks for. Defaults: <code>sonnet</code> (Claude) and Codex's default model.</td></tr></tbody></table></div>
 <p>None is a secret. cosci reads no credential from the environment; git uses your own credential setup, or asks <code>gh</code> when <code>COSCI_GH</code> (or the <code>gh</code> setting) names one.</p>
-<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.201218), the same guides that come with CoSci.</p>
+<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.201751), the same guides that come with CoSci.</p>
 </main>
 <aside class="toc"><b>On this page</b><a class="l2" href="#where-things-live">Where things live</a><a class="l2" href="#configyml">config.yml</a><a class="l3" href="#repos-and-their-keys">repos and their keys</a><a class="l3" href="#layer">layer</a><a class="l3" href="#principals-and-timezone">principals and timezone</a><a class="l3" href="#defaults">defaults</a><a class="l3" href="#capture">capture</a><a class="l2" href="#adding-a-lab">Adding a lab</a><a class="l2" href="#settingsjson">settings.json</a><a class="l2" href="#learning">Learning</a><a class="l2" href="#environment-variables">Environment variables</a></aside>
 </div>

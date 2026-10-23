@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cosci mutable-surface manifest · CoSci</title>
 <link rel="stylesheet" href="style.css?v=8430ec67eb">
-<script>var t='dark';try{t=localStorage.getItem('cosci.theme')||'dark';}catch(e){}if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);</script>
+<script>var t='light';try{t=localStorage.getItem('cosci.theme')||'light';}catch(e){}if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);</script>
 </head>
 <body>
 <header class="top"><div class="in">
@@ -40,7 +40,7 @@
 <ul><li><strong>Every commit goes through the check.</strong> <code>cosci harness tag</code> and <code>cosci harness merge</code> run <code>tools/check_harness.py</code> first and refuse when it fails; a merge result that fails is undone.</li><li><strong>Never-touch code.</strong> The <code>never-touch</code> check fails if <code>tools/check_harness.py</code>, <code>tests/</code>, <code>ccm_core/engine.py</code>, <code>ccm_core/config.py</code>, <code>mcp/server.py</code>, <code>ccm_core/telemetry.py</code>, <code>ccm_pyfloor.py</code>, this manifest or <code>triage.md</code> differ from the base release, so such a change cannot be tagged.</li><li><strong>Permissions.</strong> <code>default_write: deny</code> and person-only grants protect them. The agent has no grant tool, and the grant skill carries <code>disable-model-invocation: true</code>, enforced by <code>skills-coverage</code>.</li><li><strong>Recorded turns and the local config</strong> are outside the harness, so the check skips them; the rules above protect them.</li><li><strong>Audit.</strong> A tag made with <code>--as &lt;handle&gt;</code> names the authorizing person in the tag message, and the harness's git history keeps every change.</li></ul>
 <h2 id="changing-this-manifest">Changing this manifest</h2>
 <p>Only an engineer changes it, in the cosci repository, with the reasoning in the commit message, and it reaches installed harnesses in a release. An agent may only ask for a change, as prose in a thread.</p>
-<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.201218), the same guides that come with CoSci.</p>
+<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.201751), the same guides that come with CoSci.</p>
 </main>
 <aside class="toc"><b>On this page</b><a class="l2" href="#the-invariant">The invariant</a><a class="l2" href="#may-touch">May touch</a><a class="l2" href="#never-touch">Never touch</a><a class="l2" href="#enforcement">Enforcement</a><a class="l2" href="#changing-this-manifest">Changing this manifest</a></aside>
 </div>
