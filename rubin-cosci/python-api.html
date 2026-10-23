@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python API · CoSci</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="in">
+<a class="brand" href="./">CoSci<span>.</span></a>
+<nav class="pages"><a href="quickstart.html">Quickstart</a><a href="guide.html">Guide</a><a href="install-reference.html">Installing</a><a href="rsp.html">Rubin Science Platform</a><a href="terminal-reference.html">In a terminal</a><a href="threads.html">Threads and sharing</a><a href="troubleshooting.html">Troubleshooting</a><a href="uninstall.html">Uninstall</a></nav>
+<a class="install-btn" href="install/">Install</a>
+</div></header>
+<div class="wrap">
+<main>
+<h1>Python API</h1>
+<p>The installer makes <code>ccm_core</code> importable with the Python it installed cosci with: by default CoSci's own Python environment, <code>~/.cosci/venv/bin/python</code>. Run your scripts with that interpreter, for example <code>~/.cosci/venv/bin/python my_script.py</code>, or start it with no script for an interactive session. You can use the same records from Python, the CLI or an agent connected through MCP. They share the permission rules, git identity and local configuration.</p>
+<h2 id="join-a-repo">Join a repo</h2>
+<pre><code>from ccm_core import join_repo
+
+result = join_repo("OWNER/SHARED-REPO")
+print(result)</code></pre>
+<p>Replace <code>OWNER/SHARED-REPO</code> with your lab's existing GitHub repo, which you must be able to access; it is a placeholder, not a real repo. The default is to join it as a shared lab. Its key is the lower-case repo name (<code>shared-repo</code>). To add a repo as your private lab:</p>
+<pre><code>result = join_repo("pat/research-notes", shared=False)  # pat is an example login</code></pre>
+<p>The result is a dictionary with the repo's key, local path, join status and any notes. Joining copies the repo to your data directory and adds it to <code>config.yml</code>. Rejoining preserves existing records. It does not create a GitHub repo (to start a new lab, see the <a href="guide.html#start-a-new-lab">guide</a>), call a model, or grant an existing thread permission to write there.</p>
+<p>The function uses your installed settings by default. For a separate installation, pass <code>config_path</code>, <code>install_root</code> and <code>data_root</code> explicitly. Optional <code>git_name</code>, <code>git_email</code> and <code>protocol</code> override the configured commit identity and clone method. <code>key</code> can name a local-only repo; GitHub repo keys are derived from their names so colleagues' citations agree.</p>
+<h2 id="python-environments">Python environments</h2>
+<p>cosci writes a <code>cosci.pth</code> file in the site-packages directory of the Python that installed it. The file points to the installed application, so imports use its current code. <code>cosci status</code> shows the registration path on its <code>python</code> line.</p>
+<ul><li><strong>The default install</strong> uses CoSci's own environment, so the file is in <code>~/.cosci/venv/lib/python3.X/site-packages/</code>, and <code>import ccm_core</code> works with <code>~/.cosci/venv/bin/python</code>. Your own <code>python3</code>, and other virtual environments or conda environments, do not read it. To add packages for your scripts there, use <code>~/.cosci/venv/bin/python -m pip install &lt;package&gt;</code>; they are removed with it when you uninstall.</li><li><strong>With <code>COSCI_PYTHON</code></strong>, the installer uses that Python as it is (it must already have PyYAML). The file goes in that Python's virtual environment when it runs in one, and otherwise in its user site-packages. <code>import ccm_core</code> then works with that Python. See the <a href="install-reference.html#coscis-python-environment">install reference</a>.</li></ul>
+<p>To see an interpreter's search paths:</p>
+<pre><code>~/.cosci/venv/bin/python -m site</code></pre>
+<p>If Python reports <code>ModuleNotFoundError: No module named 'ccm_core'</code>, check that installation succeeded and that you are running the interpreter cosci was installed with. An unwritable registration directory is an installation error.</p>
+<p><code>cosci uninstall</code> removes its own Python registration while keeping your data repos. With the default install it removes <code>~/.cosci/venv</code> as well; a Python named by <code>COSCI_PYTHON</code>, and its packages, stay as they are.</p>
+<h2 id="other-record-operations">Other record operations</h2>
+<p><code>ccm_core</code> also exports configuration, thread, recording and permission functions. Read the exports in <code>ccm_core/__init__.py</code> for their names and the source functions for their parameters. These operations use the same engine as the MCP tools and the direct record CLI, available with <code>cosci thread --help</code>.</p>
+<p>Calls that only manage or read records do not need an agent. Operations that ask a model to learn or propose instruction changes use your configured model account. In an agent session, the agent must use the MCP tools and follow the restrictions on recording, access grants and sharing; the direct API is also available for your own programs.</p>
+<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.194906), the same guides that come with CoSci.</p>
+</main>
+<aside class="toc"><b>On this page</b><a class="l2" href="#join-a-repo">Join a repo</a><a class="l2" href="#python-environments">Python environments</a><a class="l2" href="#other-record-operations">Other record operations</a></aside>
+</div>
+</body>
+</html>

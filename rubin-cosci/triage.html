@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cosci triage · CoSci</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="in">
+<a class="brand" href="./">CoSci<span>.</span></a>
+<nav class="pages"><a href="quickstart.html">Quickstart</a><a href="guide.html">Guide</a><a href="install-reference.html">Installing</a><a href="rsp.html">Rubin Science Platform</a><a href="terminal-reference.html">In a terminal</a><a href="threads.html">Threads and sharing</a><a href="troubleshooting.html">Troubleshooting</a><a href="uninstall.html">Uninstall</a></nav>
+<a class="install-btn" href="install/">Install</a>
+</div></header>
+<div class="wrap">
+<main>
+<h1>cosci triage</h1>
+<p>--- title: "cosci triage" status: active tags: [cosci, governance, triage] last_updated: "2026-10-20" ---</p>
+<p>How to classify a problem with cosci, decide whether it leads to a change, and where and in what order to make it. <a href="mutable-surface-manifest.html">mutable-surface-manifest.md</a> says what may change.</p>
+<h2 id="where-problems-show-up">Where problems show up</h2>
+<div class="table"><table><thead><tr><th>Signal</th><th>Where it is recorded</th><th>Who reads it</th></tr></thead><tbody><tr><td>Findings on running cosci</td><td><code>cosci_observe</code> findings in the shared repo under <code>idea:&lt;shared&gt;/cosci</code>, including cosci failures and friction (harness <code>cosci</code>)</td><td>agents before experimenting; engineers when triaging</td></tr><tr><td>Protocol friction</td><td>per-turn telemetry sidecars (<code>&lt;thread&gt;-&lt;N&gt;.telemetry.yml</code>): <code>retries</code>, <code>duplicate</code>, <code>auto_captured</code>, <code>retro_append</code>, <code>correction_turn</code>, <code>cold_start_*</code></td><td>engineers, from the data repos</td></tr><tr><td>Cost and latency</td><td><code>elapsed_ms</code> per turn in the same sidecars</td><td>engineers</td></tr><tr><td>Sync and permission refusals</td><td>structured errors in tool results (<code>freshness-*</code>, <code>push-*</code>, <code>permission_denied</code>), the <code>→ not pushed yet</code> footer line, <code>cosci status</code></td><td>the person, then an engineer</td></tr><tr><td>Learning failures</td><td><code>discussions/.cosci-local/learn-state.json</code> and <code>learn.log</code> per clone, the launcher's learn log, shown by <code>cosci status</code> and <code>cosci_status</code></td><td>the person, then an engineer</td></tr><tr><td>Harness check failures</td><td><code>cosci harness check</code>; a refused <code>cosci harness tag</code> or <code>merge</code></td><td>the person who ran it</td></tr><tr><td>Incidents</td><td>what a person reports</td><td>engineers</td></tr></tbody></table></div>
+<p>Nothing collects these automatically; sidecars and findings are plain files in the data repos.</p>
+<h2 id="does-a-problem-lead-to-a-change">Does a problem lead to a change?</h2>
+<p>Answer these in order. At a No, stop: the problem stays recorded as a finding or thread turn.</p>
+<ol><li><strong>Recurrence.</strong> Has it happened at least twice, or can one occurrence do unbounded damage (a credential exposed, the record corrupted, private text reaching a shared repo)? One-off friction is noise.</li><li><strong>A bounded target.</strong> Is there a specific edit likely to stop it, in a may-touch file of one person's harness (skill or prompt wording, <code>style.md</code>) or in the cosci repository (the never-touch list and every code fix)?</li><li><strong>A named verifier.</strong> Does a check show the fix worked: a test, a harness check, a telemetry flag that should stop appearing? In the cosci repository, a test that fails before the fix.</li><li><strong>Cost of being wrong.</strong> Can it be undone? <code>cosci harness use &lt;previous ref&gt;</code> undoes a harness change; the next release undoes a release. An irreversible change is discussed with the people affected first.</li></ol>
+<h2 id="where-the-change-is-made">Where the change is made</h2>
+<ul><li><strong>One person's harness.</strong> The person decides the edit, the agent applies it under <code>~/.cosci</code> on their instruction, the check runs, and the person commits with <code>cosci harness tag &lt;name&gt; --as &lt;handle&gt;</code>. <code>cosci improve</code> can draft such edits from the record on a branch <code>improve/&lt;time&gt;</code> for the person to adopt with <code>cosci harness merge</code> (<a href="improve.html">improve.md</a>). They can try it for one session with <code>cosci --harness &lt;name&gt;</code> before making it current. Only one change is pending at a time (<code>cosci harness pending</code>): the harness has one working tree. It never leaves that machine.</li><li><strong>The cosci repository.</strong> An engineer makes the change with a test and both checks passing (<code>CONTRIBUTING.md</code> at the cosci repository's root). It reaches everyone in a release through <code>cosci update</code>. A harness change worth sharing goes this way too.</li></ul>
+<h2 id="order-of-work">Order of work</h2>
+<p>Rank survivors by severity × frequency ÷ blast radius:</p>
+<ul><li><strong>Severity.</strong> S1 a credential exposed or private text in a shared repo. S2 the record's integrity (a lost, duplicated or misattributed turn). S3 wrong published knowledge-base content (a citation that does not hold, or a wrong standing: how well supported a statement is). S4 cost, latency or protocol friction. S5 style and readability. Style is last: most frequent, least costly each time.</li><li><strong>Frequency.</strong> Occurrences per 100 recorded turns over a recent window.</li><li><strong>Blast radius.</strong> How many files, people and agents the change affects; smaller first at equal severity and frequency.</li><li><strong>Ties.</strong> A reported incident before a telemetry pattern; a quicker verifier before a slower one.</li></ul>
+<h2 id="changing-this-page">Changing this page</h2>
+<p>As with the manifest, an engineer changes this page in the cosci repository with the reasoning in the commit message. An agent may cite it and ask for a change in a thread.</p>
+<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.194906), the same guides that come with CoSci.</p>
+</main>
+<aside class="toc"><b>On this page</b><a class="l2" href="#where-problems-show-up">Where problems show up</a><a class="l2" href="#does-a-problem-lead-to-a-change">Does a problem lead to a change?</a><a class="l2" href="#where-the-change-is-made">Where the change is made</a><a class="l2" href="#order-of-work">Order of work</a><a class="l2" href="#changing-this-page">Changing this page</a></aside>
+</div>
+</body>
+</html>

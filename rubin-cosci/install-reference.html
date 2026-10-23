@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Installing · CoSci</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="in">
+<a class="brand" href="./">CoSci<span>.</span></a>
+<nav class="pages"><a href="quickstart.html">Quickstart</a><a href="guide.html">Guide</a><a href="install-reference.html" class="on">Installing</a><a href="rsp.html">Rubin Science Platform</a><a href="terminal-reference.html">In a terminal</a><a href="threads.html">Threads and sharing</a><a href="troubleshooting.html">Troubleshooting</a><a href="uninstall.html">Uninstall</a></nav>
+<a class="install-btn" href="install/">Install</a>
+</div></header>
+<div class="wrap">
+<main>
+<h1>Installing</h1>
+<p>For the normal install, see the <a href="quickstart.html">quickstart</a>. This page is for options, scripted installs and special cases. Options go after the file: <code>bash cosci-install.sh --help</code> lists them all.</p>
+<h3 id="where-to-get-the-installer">Where to get the installer</h3>
+<p>The install page is <a href="https://c4du-stanford.github.io/rubin-cosci/install/">https://c4du-stanford.github.io/rubin-cosci/install/</a>. It opens only for GitHub accounts with access to the private repo <code>stanford-developers/rubin-cosci-install</code>. Stanford members sign in with Stanford. If it shows 404 or a sign-in loop, ask the person who invited you to add your GitHub account.</p>
+<ul><li><strong>Download for Mac</strong> gives <code>CoSci-Install.dmg</code>. It opens as the <strong>Install CoSci</strong> folder, with <code>cosci-install.sh</code> and <strong>How to install CoSci</strong>. Run <code>bash "/Volumes/Install CoSci/cosci-install.sh"</code> in Terminal.</li><li><strong>Download for the RSP or Linux</strong> gives <code>cosci-install.sh</code>: one file with CoSci inside. It checks itself against a checksum before installing.</li><li><strong>With git access to GitHub already set up</strong> (agents, scripts):</li></ul>
+<pre><code>git clone --depth 1 https://github.com/stanford-developers/rubin-cosci-install ~/cosci-release &amp;&amp; bash ~/cosci-release/cosci-install.sh</code></pre>
+<p><strong>Downloaded twice on a Mac?</strong> The second copy opens as <strong>Install CoSci 1</strong>. Eject the older <strong>Install CoSci</strong> in Finder's sidebar first, or drag the newest <code>cosci-install.sh</code> into Terminal after typing <code>bash </code>.</p>
+<p><strong>Updates.</strong> <code>cosci update</code> fetches the newest release with your GitHub sign-in, the same access the page needs. If it can't, download the newest installer from the page and run it. Your labs and settings are kept.</p>
+<h3 id="why-terminal-not-a-double-click-app">Why Terminal, not a double-click app</h3>
+<p>CoSci is not signed by Apple. macOS blocks an unsigned app opened from a download, but not a file run with <code>bash</code> in Terminal. So the Mac download holds no app. The CoSci app the installer writes into <code>~/Applications</code> is made on your Mac and opens normally.</p>
+<h3 id="the-guided-install-and---yes">The guided install and <code>--yes</code></h3>
+<p>Run in a terminal, the installer is guided:</p>
+<ul><li><strong>On a Mac</strong>, the questions open in the <strong>CoSci setup</strong> window. Add <code>--terminal</code> to answer in the terminal instead.</li><li><strong>On Linux and the Rubin Science Platform</strong>, they are asked in the terminal.</li><li><strong>With <code>--yes</code></strong> (or <code>-y</code>), or with no terminal (an agent or a script), it asks nothing. The options alone decide.</li></ul>
+<p>Each question has an option that answers it in advance:</p>
+<ul><li><strong>Coding agent:</strong> <code>--agent claude|codex|both|none</code></li><li><strong>Shared labs:</strong> <code>--shared OWNER/SHARED-REPO</code> to join, <code>--create-shared OWNER/SHARED-REPO</code> to start one</li><li><strong>Private labs:</strong> <code>--private OWNER/REPO</code> (one you already have; repeat it for several, and <code>--private local/notes</code> keeps one on this computer too), <code>--create-private</code> (a new <code>&lt;login&gt;/cosci-notes</code>), or <code>--local</code> (no GitHub at all)</li><li><strong>Background learning:</strong> <code>--learn claude|codex|off</code></li><li><strong>The <code>cosci</code> command in Terminal:</strong> <code>--no-path</code> leaves your shell's startup files alone</li></ul>
+<p>The review step shows your choices as options. The same options plus <code>--yes</code> repeat the install without questions.</p>
+<p>What the guided install can run for you, always shown first and only after a yes:</p>
+<ul><li><strong>Apple's command line tools</strong> on a new Mac: <code>xcode-select --install</code>.</li><li><strong>Claude Code</strong> or <strong>Codex</strong>: its maker's installer, its update, and its sign-in with your own account.</li><li><strong>The GitHub CLI</strong>, if you have no <code>gh</code>: a private copy in <code>~/.cosci/gh</code>, checked against GitHub's published checksum.</li><li><strong>The GitHub sign-in</strong>: <code>gh auth login --web</code>, with a one-time code you paste at <a href="https://github.com/login/device">https://github.com/login/device</a>.</li><li><strong>Accepting a lab invitation</strong> waiting for you on GitHub.</li></ul>
+<p>The agents and <code>gh</code> keep their own sign-ins. CoSci never reads, asks for or stores a password or token.</p>
+<h3 id="coscis-python-environment">CoSci's Python environment</h3>
+<p>The installer makes CoSci's own Python environment at <code>~/.cosci/venv</code>, with PyYAML (and pywebview on a Mac, for the app). Your own Python is not changed. <code>cosci uninstall</code> removes it.</p>
+<ul><li>If it can't be made on Debian or Ubuntu, install the <code>python3-venv</code> package and run the installer again.</li><li>If pywebview can't be installed, the rest still installs; the summary shows the command that adds it.</li><li>To use your own Python instead, set <code>COSCI_PYTHON</code> (it must already have PyYAML; CoSci installs nothing into it):</li></ul>
+<pre><code>COSCI_PYTHON=/path/to/python3 bash cosci-install.sh</code></pre>
+<h3 id="starting-a-project">Starting a project</h3>
+<p>One member starts a shared lab, once. Two ways:</p>
+<ul><li><strong>At install:</strong> <code>bash cosci-install.sh --create-shared OWNER/SHARED-REPO</code>. It creates the private repo on GitHub. It refuses a repo that already exists.</li><li><strong>Later:</strong> create an empty private repo on GitHub (on the web, or <code>gh repo create OWNER/SHARED-REPO --private</code>), then <code>cosci join OWNER/SHARED-REPO</code>. CoSci gives it its first commit.</li></ul>
+<p>Then give each colleague <strong>write access</strong> on GitHub (the repo's Settings → Collaborators). Every recorded turn is pushed, so read access is not enough. They join from the setup window, from <strong>Join a lab…</strong> in the CoSci window, or with <code>cosci join OWNER/SHARED-REPO</code>.</p>
+<p>More in the guide: <a href="guide.html#join-an-existing-lab">joining</a>, <a href="guide.html#start-a-new-lab">starting a lab</a>, <a href="guide.html#work-with-several-labs">several labs</a>.</p>
+<h3 id="your-private-lab-on-github">Your private lab on GitHub</h3>
+<ul><li><strong>A new one:</strong> <code>bash cosci-install.sh --create-private</code> makes a private <code>&lt;login&gt;/cosci-notes</code> on your personal account. It is backed up and reachable from your other computers.</li><li><strong>One you already have</strong> (from another computer): <code>bash cosci-install.sh --private OWNER/REPO</code>.</li></ul>
+<p>Keep it on your personal account: organization owners can read private repos in their organization.</p>
+<h3 id="installing-from-a-clone">Installing from a clone</h3>
+<p>With access to the application repo:</p>
+<pre><code>git clone https://github.com/c4du-stanford/rubin-cosci ~/.cosci-src
+~/.cosci-src/install.sh</code></pre>
+<p><code>cosci update</code> then follows that clone's release tags.</p>
+<h3 id="no-github-at-all">No GitHub at all</h3>
+<pre><code>bash cosci-install.sh --local --handle pat</code></pre>
+<p>Everything stays on this computer. Shared labs are local too (<code>--shared local/&lt;name&gt;</code>). <code>pat</code> is an example name.</p>
+<h3 id="all-options">All options</h3>
+<p><code>--private</code>, <code>--create-private</code>, <code>--shared</code>, <code>--create-shared</code>, <code>--local</code>, <code>--handle</code>, <code>--git-name</code>, <code>--git-email</code>, <code>--install-root</code>, <code>--data-root</code>, <code>--learn claude|codex|off</code>, <code>--timezone</code>, <code>--protocol https|ssh</code>, <code>--no-link</code>, <code>--no-path</code>, <code>--agent claude|codex|both|none</code>, <code>--terminal</code>, <code>--yes</code> (<code>-y</code>, <code>--no-input</code>) and <code>--install-url</code>.</p>
+<p>Re-running the installer keeps your labs and settings. <code>--local</code> can't be combined with <code>--create-shared</code>. For the full text, run <code>bash cosci-install.sh --help</code>.</p>
+<p>See <a href="configuration.html">configuration</a> for paths and settings, and <a href="troubleshooting.html">troubleshooting</a> for problems.</p>
+<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.194906), the same guides that come with CoSci.</p>
+</main>
+<aside class="toc"><b>On this page</b><a class="l3" href="#where-to-get-the-installer">Where to get the installer</a><a class="l3" href="#why-terminal-not-a-double-click-app">Why Terminal, not a double-click app</a><a class="l3" href="#the-guided-install-and---yes">The guided install and --yes</a><a class="l3" href="#coscis-python-environment">CoSci&#x27;s Python environment</a><a class="l3" href="#starting-a-project">Starting a project</a><a class="l3" href="#your-private-lab-on-github">Your private lab on GitHub</a><a class="l3" href="#installing-from-a-clone">Installing from a clone</a><a class="l3" href="#no-github-at-all">No GitHub at all</a><a class="l3" href="#all-options">All options</a></aside>
+</div>
+</body>
+</html>

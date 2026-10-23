@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>User Commands - Quick Reference · CoSci</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="in">
+<a class="brand" href="./">CoSci<span>.</span></a>
+<nav class="pages"><a href="quickstart.html">Quickstart</a><a href="guide.html">Guide</a><a href="install-reference.html">Installing</a><a href="rsp.html">Rubin Science Platform</a><a href="terminal-reference.html">In a terminal</a><a href="threads.html">Threads and sharing</a><a href="troubleshooting.html">Troubleshooting</a><a href="uninstall.html">Uninstall</a></nav>
+<a class="install-btn" href="install/">Install</a>
+</div></header>
+<div class="wrap">
+<main>
+<h1>User Commands - Quick Reference</h1>
+<p>--- title: User Commands - Quick Reference status: current tags:</p>
+<ul><li>help</li><li>commands</li><li>reference</li></ul>
+<p>last_updated: '2026-06-08T00:00:00+00:00' ---</p>
+<p>This file is generated from <code>ccm_core/dispatch.py</code>. Every verb below is also available as a typed MCP tool. docs/threads.md explains what each one means. The command form is <code>cosci &lt;verb&gt; [args]</code>.</p>
+<p>You type these and the agent relays them. A bare <code>help</code> works too.</p>
+<h2 id="help">Help</h2>
+<ul><li><strong><code>help</code>, <code>help &lt;topic&gt;</code>, <code>cosci help [topic]</code></strong> - print the command reference.</li></ul>
+<h2 id="setup">Setup</h2>
+<ul><li><strong><code>cosci join &lt;owner/repo&gt; [--private] [--key &lt;key&gt;]</code></strong> - join a shared lab's existing repo; use --private for your own private lab. Joins an existing GitHub repo or <code>local/&lt;name&gt;</code> with your git credentials. It is available in this session immediately. Joining does not create a GitHub repo.</li><li><strong><code>cosci reset</code></strong> - re-run the installer (<code>cosci update</code>, or the install line) to change the handle or where records are kept; settings are in ~/.cosci/settings.json.</li></ul>
+<h2 id="threads---opening-and-reading">Threads - opening and reading</h2>
+<ul><li><strong><code>cosci open-thread &lt;name&gt;</code></strong> - open thread &lt;name&gt;, creating it if it does not exist. Spoken forms that also work: <code>open-thread &lt;name&gt;</code>, <code>open thread &lt;name&gt;</code>. Use <code>&lt;repo&gt;/&lt;name&gt;</code> to target a specific data repo.</li><li><strong><code>cosci new-thread &lt;name&gt;</code></strong> - create a new thread with the current turn as its first; fails if it exists. Spoken forms that also work: <code>new thread: &lt;name&gt;</code>, <code>discussion: &lt;name&gt;</code>. Use <code>&lt;repo&gt;/&lt;name&gt;</code> to choose the repo it is stored in.</li><li><strong><code>cosci close-thread</code></strong> - close the current thread and go back to ordinary, unrecorded conversation. Spoken forms that also work: <code>close-thread</code>, <code>close thread</code>.</li><li><strong><code>cosci list</code></strong> - list active threads (in all configured repos, or in one repo). Spoken forms that also work: <code>what discussions are open?</code>, <code>what discussions are open</code>.</li><li><strong><code>cosci status</code></strong> - show the status of the current thread.</li><li><strong><code>cosci catchup [--limit N]</code></strong> - where the current thread stands, in one call: status (band, permissions, next_action, pending warnings), the last N turns (default 12) as 300-character excerpts, and the latest human and agent turns in full; the best first read.</li></ul>
+<h2 id="threads---recording-for-someone-else">Threads - recording for someone else</h2>
+<ul><li><strong><code>cosci as &lt;handle&gt;: &lt;message&gt;</code></strong> - record one human turn as &lt;handle&gt;, keeping &lt;message&gt; word for word. Spoken forms that also work: <code>as &lt;handle&gt;: &lt;message&gt;</code>.</li></ul>
+<h2 id="threads---recording-earlier-turns">Threads - recording earlier turns</h2>
+<ul><li><strong><code>cosci include-last &lt;N&gt;</code></strong> - add this session's last N earlier turns, from the history the harness supplies. Spoken forms that also work: <code>include the last N turns</code>.</li><li><strong><code>cosci include-from "&lt;phrase&gt;"</code></strong> - add this session's earlier turns from the one containing the quoted phrase, from the history the harness supplies. Spoken forms that also work: <code>include from "&lt;phrase&gt;"</code>.</li><li><strong><code>cosci log-as &lt;name&gt;</code></strong> - record the current exchange as thread &lt;name&gt; from this turn on; earlier turns only with include-last or include-from. Spoken forms that also work: <code>log this as thread &lt;name&gt;</code>.</li></ul>
+<h2 id="threads---commit-footer-control">Threads - commit footer control</h2>
+<ul><li><strong><code>cosci quiet</code></strong> - hide the commit footers for this session until unquiet (recording continues). Spoken forms that also work: <code>quiet</code>.</li><li><strong><code>cosci unquiet</code></strong> - resume showing commit footers for this session. Spoken forms that also work: <code>unquiet</code>.</li></ul>
+<h2 id="threads---the-band-recording-on-or-off">Threads - the band (recording on or off)</h2>
+<ul><li><strong><code>cosci close-band</code></strong> - keep the thread open but pause recording (close the band) until open-band.</li><li><strong><code>cosci open-band</code></strong> - resume recording turns on the current thread (open the band).</li><li><strong><code>cosci set-band &lt;open|closed&gt;</code></strong> - set the band of the current thread to open (recording) or closed (paused).</li></ul>
+<h2 id="threads---permissions">Threads - permissions</h2>
+<ul><li><strong><code>cosci permissions</code></strong> - show what the current thread may read and write, and whether each permission is granted explicitly or inherited from a default.</li><li><strong><code>cosci grant &lt;repo&gt; &lt;none|read|read-write&gt; [--as &lt;human-handle&gt;]</code></strong> - change the current thread's permission on one repo by editing its permission file. This edits the thread's permission file, which decides what it may write, so only you make a grant: type it yourself. An agent may relay the command, as with <code>cosci close-band</code>. No agent tool can make a grant. Granting read-write means this thread's content can reach that repo. <code>cosci tidy</code> lists every such grant.</li></ul>
+<h2 id="knowledge-base">Knowledge base</h2>
+<ul><li><strong><code>cosci share &lt;statement-id&gt; [&lt;statement-id&gt; ...] [--to &lt;lab&gt;] [--as &lt;human-handle&gt;]</code></strong> - share statements from your private lab's knowledge base with a shared lab, where its members and their agents can read them. Sharing is your act, so you type it yourself. An agent may suggest something to share and relay the command. No agent tool can share. Type it in a thread of your private lab. Each statement goes with the passage it came from, so the lab can see its source. Text holding your handle, home folder or a private lab or thread name is refused. Sharing the same statement twice changes nothing. <code>--to</code> names the shared lab when you have joined more than one.</li></ul>
+<h2 id="maintenance">Maintenance</h2>
+<ul><li><strong><code>cosci tidy [--thread &lt;name&gt;] [--apply]</code></strong> - audit every configured repo for stale markers, ledger growth, chunk-status drift and missing permission files, and list every cross-repo write grant; repairs nothing unless --apply is given. Tidy writes only state local to your clone or files inside the repo being tidied. It never copies content between repos.</li></ul>
+<h2 id="surfaces">Surfaces</h2>
+<ul><li><strong><code>cosci surface-ack</code></strong> - no longer required; kept so older clients that acknowledge do not error.</li></ul>
+<h2 id="in-your-terminal">In your terminal</h2>
+<ul><li><strong><code>cosci join &lt;owner/repo&gt; [--private] [--key &lt;key&gt;]</code></strong> - join a shared lab's existing repo; use --private for your own private lab.</li><li><strong><code>cosci thread &lt;command&gt; [args]</code></strong> - manage records directly, without an agent; use cosci thread --help for commands.</li></ul>
+<p><a href="terminal-reference.html">Direct terminal commands</a></p>
+<h2 id="how-a-command-reaches-the-engine">How a command reaches the engine</h2>
+<p>Claude Code calls the typed <code>cosci_*</code> tools of the cosci MCP server directly. Anything you type as <code>cosci &lt;verb&gt; ...</code> is checked by <code>cosci_dispatch</code> first. That check makes a command like <code>cosci close-band</code> count as your act.</p>
+<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.194906), the same guides that come with CoSci.</p>
+</main>
+<aside class="toc"><b>On this page</b><a class="l2" href="#help">Help</a><a class="l2" href="#setup">Setup</a><a class="l2" href="#threads---opening-and-reading">Threads - opening and reading</a><a class="l2" href="#threads---recording-for-someone-else">Threads - recording for someone else</a><a class="l2" href="#threads---recording-earlier-turns">Threads - recording earlier turns</a><a class="l2" href="#threads---commit-footer-control">Threads - commit footer control</a><a class="l2" href="#threads---the-band-recording-on-or-off">Threads - the band (recording on or off)</a><a class="l2" href="#threads---permissions">Threads - permissions</a><a class="l2" href="#knowledge-base">Knowledge base</a><a class="l2" href="#maintenance">Maintenance</a><a class="l2" href="#surfaces">Surfaces</a><a class="l2" href="#in-your-terminal">In your terminal</a><a class="l2" href="#how-a-command-reaches-the-engine">How a command reaches the engine</a></aside>
+</div>
+</body>
+</html>

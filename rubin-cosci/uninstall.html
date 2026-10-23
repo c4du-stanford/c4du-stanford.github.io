@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uninstall · CoSci</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="in">
+<a class="brand" href="./">CoSci<span>.</span></a>
+<nav class="pages"><a href="quickstart.html">Quickstart</a><a href="guide.html">Guide</a><a href="install-reference.html">Installing</a><a href="rsp.html">Rubin Science Platform</a><a href="terminal-reference.html">In a terminal</a><a href="threads.html">Threads and sharing</a><a href="troubleshooting.html">Troubleshooting</a><a href="uninstall.html" class="on">Uninstall</a></nav>
+<a class="install-btn" href="install/">Install</a>
+</div></header>
+<div class="wrap">
+<main>
+<h1>Uninstall</h1>
+<p>One command removes cosci. Your data repos (threads and knowledge bases, here and on GitHub) stay.</p>
+<h2 id="1-remove-the-harness-and-the-command">1. Remove the harness and the command</h2>
+<pre><code>cosci uninstall</code></pre>
+<p>It says what it removes and keeps, then asks. After installing from the install page on a Mac it prints, for example:</p>
+<pre><code>this removes the harness at ~/.cosci (with CoSci's own Python environment) (with CoSci's own GitHub CLI), the launcher link ~/.local/bin/cosci, the CoSci app ~/Applications/CoSci.app, the Python API registration ~/.cosci/venv/lib/python3.9/site-packages/cosci.pth, the PATH line it added to ~/.zprofile, the session run files, the search index ~/.cache/cosci/brain-index (built from your repos), the workspace ~/.cosci-data/workspace and harness worktrees under ~/.cosci-data/harnesses
+  the harness's git history goes with it: 0 mutation commit(s), 0 tagged harness(es), branches base, main
+  to keep it: git clone /Users/pat/.cosci &lt;somewhere&gt; first
+kept, untouched: every data repo (~/.cosci-data/local__notes, ~/.cosci-data/owner__shared-repo) and ~/.cosci-data/config.yml; nothing on GitHub is touched
+continue? [y/N] y
+done; reinstall any time: download the installer from the install page, https://c4du-stanford.github.io/rubin-cosci/install/</code></pre>
+<p>It lists only what is there: the GitHub CLI appears only if the guided install put a copy in <code>~/.cosci/gh</code>, and the app only on a Mac. Paths are the actual ones; the Python registration is removed only when it belongs to this installation.</p>
+<p>After a clone install the <code>kept</code> line also names the source clone <code>~/.cosci-src</code>, and the last line says to reinstall with install.sh from it.</p>
+<p><code>cosci uninstall -y</code> skips the question. If the <code>cosci</code> command is already gone, <code>~/.cosci/bin/cosci uninstall</code> does the same, or <code>~/.cosci-src/uninstall.sh</code> after a clone install.</p>
+<p>The search index holds text from your turns, so it goes too. If you pointed <code>COSCI_BRAIN_CACHE</code> elsewhere, delete that folder yourself. The harness's history holds your changes and tags; to keep them, clone <code>~/.cosci</code> first, as the message says.</p>
+<p>If the installer added <code>~/.local/bin</code> to your PATH, uninstall takes that line (marked <code># added by the cosci installer</code>) out of your shell's startup file again. cosci itself never wrote under <code>~/.claude</code> or <code>~/.codex</code>, so nothing of cosci's is there to clean.</p>
+<h3 id="python-the-github-cli-and-your-sign-ins">Python, the GitHub CLI and your sign-ins</h3>
+<p>CoSci's own Python environment, <code>~/.cosci/venv</code>, with PyYAML and pywebview, goes with the harness, and so does the Python API registration inside it. If you installed with <code>COSCI_PYTHON</code>, that Python and its packages are left as they are; only cosci's registration is removed from it.</p>
+<p>CoSci's copy of the GitHub CLI, <code>~/.cosci/gh</code>, goes too. If you answered yes to <code>Also use it for your other git work on GitHub?</code>, uninstall also removes the git settings that pointed git at that copy (in your global git configuration), so git no longer tries to run it.</p>
+<p>Your GitHub sign-in itself stays in <code>gh</code>'s own storage (the keychain on a Mac). To remove it, run <code>gh auth logout</code> before uninstalling (<code>~/.cosci/gh/bin/gh auth logout</code> for CoSci's copy), or revoke it on github.com under Settings &gt; Applications. The agents you installed or signed in to, Claude Code and Codex, are yours and stay as they are.</p>
+<h2 id="2-check-it-is-gone">2. Check it is gone</h2>
+<pre><code>ls ~/.cosci            # No such file or directory
+command -v cosci       # prints nothing</code></pre>
+<h2 id="what-is-kept">What is kept</h2>
+<p>On disk: every data repo under <code>~/.cosci-data/&lt;owner&gt;__&lt;repo&gt;</code>, the configuration <code>~/.cosci-data/config.yml</code>, the learner log <code>~/.cosci-data/learn.log</code> and, after a clone install, the source clone <code>~/.cosci-src</code>. Your private lab and your shared labs on GitHub are untouched. The data repos are plain git repos; read them with any editor, or run:</p>
+<pre><code>git -C ~/.cosci-data/local__notes log --stat</code></pre>
+<p>Run the install again any time (download the installer from the <a href="https://c4du-stanford.github.io/rubin-cosci/install/">install page</a> and run it, or install.sh from your clone) and cosci picks the repos up again, reporting each as <code>(up to date)</code> or <code>(exists)</code>. To remove a local clone, delete it; its GitHub repo stays.</p>
+<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.194906), the same guides that come with CoSci.</p>
+</main>
+<aside class="toc"><b>On this page</b><a class="l2" href="#1-remove-the-harness-and-the-command">1. Remove the harness and the command</a><a class="l3" href="#python-the-github-cli-and-your-sign-ins">Python, the GitHub CLI and your sign-ins</a><a class="l2" href="#2-check-it-is-gone">2. Check it is gone</a><a class="l2" href="#what-is-kept">What is kept</a></aside>
+</div>
+</body>
+</html>

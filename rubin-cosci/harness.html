@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The harness · CoSci</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="in">
+<a class="brand" href="./">CoSci<span>.</span></a>
+<nav class="pages"><a href="quickstart.html">Quickstart</a><a href="guide.html">Guide</a><a href="install-reference.html">Installing</a><a href="rsp.html">Rubin Science Platform</a><a href="terminal-reference.html">In a terminal</a><a href="threads.html">Threads and sharing</a><a href="troubleshooting.html">Troubleshooting</a><a href="uninstall.html">Uninstall</a></nav>
+<a class="install-btn" href="install/">Install</a>
+</div></header>
+<div class="wrap">
+<main>
+<h1>The harness</h1>
+<p>Everything that shapes an agent session: the cosci runtime (engine, MCP server, tools), the skills, and the prompt text added to the system prompt. It lives at <code>~/.cosci</code>, a local git repository that is never pushed; every release and change is a commit. Your data repos sync with GitHub.</p>
+<h2 id="model">Model</h2>
+<div class="table"><table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>base</strong></td><td>Branch <code>base</code> holds the releases, one commit each, tagged <code>base/&lt;version&gt;</code>. Never edited by hand.</td></tr><tr><td><strong>current harness</strong></td><td>Branch <code>main</code>: base plus your changes. <code>cosci</code> runs it by default.</td></tr><tr><td><strong>tagged harnesses</strong></td><td><code>cosci harness tag &lt;name&gt;</code> commits the current harness and tags it <code>harness/&lt;name&gt;</code>.</td></tr><tr><td><strong>branches</strong></td><td><code>cosci harness branch &lt;name&gt;</code> starts a separate line of changes; <code>cosci harness use &lt;ref&gt;</code> switches the current one.</td></tr><tr><td><strong>any version, on demand</strong></td><td><code>cosci --harness &lt;ref&gt;</code> runs one session from a tag, branch or commit (its code, skills and prompt) without changing what is current.</td></tr></tbody></table></div>
+<p>Layout (the same at every version):</p>
+<pre><code>~/.cosci/
+├── ccm_core/      engine, knowledge base, CLI, harness management
+├── mcp/           the cosci MCP server
+├── skills/        the /cosci:* skills
+├── tools/         the capture hook, the knowledge-base tool, the check, lint and repair tools
+├── harness/       prompt text per agent: claude-code.md, codex.md
+├── templates/     config, style and learning-prompt templates
+├── docs/          these pages
+├── bin/cosci        the launcher
+└── VERSION, install.sh, uninstall.sh, ccm_pyfloor.py, README.md</code></pre>
+<p>Runtime state (<code>settings.json</code>, <code>run/</code>, <code>plugin/</code>) is git-ignored and not part of the harness.</p>
+<p><code>cosci</code> adds <code>harness/claude-code.md</code> to Claude Code's system prompt (<code>--append-system-prompt-file</code>) and passes the skills as a plugin (<code>--plugin-dir</code>). <code>cosci codex</code> passes <code>harness/codex.md</code> as developer instructions (<code>-c developer_instructions=...</code>); Codex has no per-session skills, so its prompt has the agent relay the <code>cosci &lt;verb&gt;</code> commands you type. Each prompt must stay within 6144 bytes; the <code>prompt-budget</code> check fails a larger one.</p>
+<h2 id="changing-the-harness-who-may-and-how">Changing the harness: who may, and how</h2>
+<p>The rule, from <a href="mutable-surface-manifest.html">mutable-surface-manifest.md</a>: <strong>the agent never applies a change on its own.</strong> A change takes these steps:</p>
+<ol><li>You decide on an edit.</li><li>You or the agent, on your instruction, apply it under <code>~/.cosci</code>.</li><li>The check passes (<code>cosci harness check</code>).</li><li>You commit it with <code>cosci harness tag &lt;name&gt; --as &lt;handle&gt;</code>, which reruns the check and names you in the tag.</li></ol>
+<p><a href="triage.html">triage.md</a> says how problems are classified and when one becomes a change. <code>cosci improve</code> drafts changes from your recorded threads on a branch <code>improve/&lt;time&gt;</code> for you to try, then adopt or delete (<a href="improve.html">improve.md</a>).</p>
+<pre><code>cosci harness check                                    # the check: 11 checks over this checkout
+cosci harness pending [--patch]                        # the applied-but-uncommitted edit
+cosci harness tag &lt;name&gt; [-m "why"] --as &lt;handle&gt;      # check, commit, tag harness/&lt;name&gt;; refuses on failure
+cosci harness discard                                  # drop an applied edit you are not keeping
+cosci harness list                                     # current commit, branches, base releases, tags
+cosci harness diff [&lt;a&gt;] [&lt;b&gt;] [--patch]               # two versions; with no args, current vs. base
+cosci harness show [&lt;ref&gt;] [--agent codex]             # the prompt text at a version</code></pre>
+<p>The check covers:</p>
+<ul><li>Python and shell syntax</li><li>config template and skill front matter</li><li>that <code>docs/commands.md</code> matches the command table</li><li>doc links</li><li>each prompt's size and required passages</li><li>the skills' contract</li><li>skills coverage: every typed verb has a skill, every skill an <code>argument-hint</code>, and the band, grant, share and improve skills carry <code>disable-model-invocation: true</code></li><li>the JSON-emitting helpers</li><li>token-shaped strings</li><li>that the never-touch files match base</li></ul>
+<p>The never-touch files are the check, the tests, the engine's write path, turn telemetry, the interpreter floor and the governance docs. If a harness changes one, the check fails and the tag is refused. They change in the cosci repository and arrive in a release.</p>
+<h2 id="selecting">Selecting</h2>
+<pre><code>cosci --harness &lt;name&gt;              # one session from that version; current is untouched
+cosci harness use &lt;ref&gt;             # make a tag, branch, or commit current for every session
+cosci harness branch &lt;name&gt; [ref]   # new branch from the current commit (or from &lt;ref&gt;); edits now go there
+cosci harness merge &lt;ref&gt;           # merge another harness into the current one (a real merge commit;
+                                   # a conflict, or a failed check on the result, is undone and reported)</code></pre>
+<p>A <code>--harness &lt;ref&gt;</code> session runs from a worktree under <code>~/.cosci-data/harnesses/</code>, so two versions can be compared side by side. Checking out a tag with <code>use</code> leaves the repo detached; run <code>cosci harness branch &lt;name&gt;</code> before further changes.</p>
+<h2 id="updating">Updating</h2>
+<pre><code>cosci update --check
+cosci update [--to vX.Y.Z]</code></pre>
+<p><code>cosci update</code> installs a newer release from where you installed:</p>
+<ul><li>Install from the install page: it fetches the release repo (<code>stanford-developers/rubin-cosci-install</code>) through git with your GitHub sign-in, and when its <code>VERSION</code> is newer than yours it runs that release's installer, which checks the release against its checksum. The repo holds only its newest release, so <code>--to</code> is refused. If it can't reach the repo, download the newest installer from the install page and run it; your labs and settings are kept.</li><li>Clone install: it fetches release tags into your clone and installs the newest, or the one <code>--to</code> names.</li></ul>
+<p>The release is committed on <code>base</code>, tagged <code>base/&lt;version&gt;</code>, and merged into the current branch; uncommitted edits are committed first. Your settings and data repos stay.</p>
+<p>A conflicting merge is aborted: the new base is tagged, the current harness is unchanged, and the conflicting files are listed. Resolve it in <code>~/.cosci</code> with git (<code>git merge base</code>, fix, commit), or run plain base for a session with <code>cosci --harness base/&lt;version&gt;</code>. Pushing is disabled for every remote of <code>~/.cosci</code>.</p>
+<h2 id="underneath">Underneath</h2>
+<p>It is plain git: <code>git -C ~/.cosci log --oneline --graph --all</code>, <code>git tag</code>, <code>git diff base..main</code> and <code>git worktree list</code> show what the <code>cosci harness</code> commands report.</p>
+<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.194906), the same guides that come with CoSci.</p>
+</main>
+<aside class="toc"><b>On this page</b><a class="l2" href="#model">Model</a><a class="l2" href="#changing-the-harness-who-may-and-how">Changing the harness: who may, and how</a><a class="l2" href="#selecting">Selecting</a><a class="l2" href="#updating">Updating</a><a class="l2" href="#underneath">Underneath</a></aside>
+</div>
+</body>
+</html>

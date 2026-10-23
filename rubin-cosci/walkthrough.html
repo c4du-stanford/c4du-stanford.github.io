@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Walkthrough: two people, one project · CoSci</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="in">
+<a class="brand" href="./">CoSci<span>.</span></a>
+<nav class="pages"><a href="quickstart.html">Quickstart</a><a href="guide.html">Guide</a><a href="install-reference.html">Installing</a><a href="rsp.html">Rubin Science Platform</a><a href="terminal-reference.html">In a terminal</a><a href="threads.html">Threads and sharing</a><a href="troubleshooting.html">Troubleshooting</a><a href="uninstall.html">Uninstall</a></nav>
+<a class="install-btn" href="install/">Install</a>
+</div></header>
+<div class="wrap">
+<main>
+<h1>Walkthrough: two people, one project</h1>
+<p>A real run of CoSci, the Rubin Co-Scientist, with two people on one project. Pat records a conversation, CoSci learns from it, and Pat shares one rule with the project's shared lab by typing <code>cosci share</code>. Kim's agent, on another machine, finds the rule and where Pat said it, but cannot open Pat's conversation.</p>
+<p>It ran against real private GitHub repos with Claude Code 2.1.304 and its Sonnet model. Logins, names, paths and repos were renamed (Pat is <code>pat</code>, Kim is <code>kim</code>, the shared lab is <code>lab/shared-repo</code>, Pat's private lab <code>pat/cosci-notes</code>) and project and thread names replaced with generic labels. Hashes, times and wording are as they came out, except one sentence naming a real colleague, which was reworded; some outputs are summarised.</p>
+<h2 id="the-setup">The setup</h2>
+<ul><li><code>lab/shared-repo</code> is the project's shared lab. Someone on the project created its repo on GitHub and gave both people write access, so both install with <code>--shared</code> (a first member can also <a href="install-reference.html#starting-a-project">create it at install</a>). Its key on every machine is <code>shared-repo</code>.</li><li>Pat's private lab is <code>pat/cosci-notes</code> on Pat's own GitHub account (key <code>cosci-notes</code>).</li><li>Kim chose a local-only private lab (<code>local/notes</code>, key <code>notes</code>) that never leaves Kim's machine; one on GitHub works the same way.</li></ul>
+<p>Pat installs:</p>
+<pre><code>~/.cosci-src/install.sh --shared lab/shared-repo --private pat/cosci-notes --handle pat --learn claude</code></pre>
+<p>This run installed from a clone of the cosci repo; the installer from the install page in the <a href="../README.md#install">README</a> takes the same options after the file name (<code>bash cosci-install.sh --shared …</code>). The summary lists both labs as <code>(cloned)</code>, in the format <a href="guide.html#2-install-cosci">the guide</a> shows, and <code>learn claude</code>.</p>
+<h2 id="1-pat-records-a-thread">1. Pat records a thread</h2>
+<p>Pat starts <code>cosci</code>, opens a thread and says two things about the project:</p>
+<pre><code>cosci open-thread project-setup</code></pre>
+<blockquote><p>For the project: the alert stream comes from ANTARES, and the analysis notebooks live under notebooks/ in the project repo.</p></blockquote>
+<blockquote><p>One more rule: the lens-model priors are set in config/priors.yaml; nobody hard-codes priors inside a notebook.</p></blockquote>
+<p>The new thread was created in Pat's private lab. After each reply the agent showed the recorded turn and its footer; this is the second:</p>
+<pre><code>## Tuesday October 20 2026 · 1:57 AM PDT · pats-claude-code (claude-code)
+
+Understood: lens-model priors live in config/priors.yaml, and no notebook hard-codes them.
+
+⚙ Claude Sonnet 5.5 in Claude Code 2.1.304 · careful · effort unavailable
+
+[committed: 8d11af1d3dfe files=2]
+
+→ committed 1c4444f to discussions/project-setup/project-setup-0.md</code></pre>
+<p><code>pat/cosci-notes</code> on GitHub now has three commits, all by Pat's git identity; the thread file holds Pat's two turns and the agent's two:</p>
+<pre><code>1c4444f  Pat Example &lt;pat@example.org&gt;  discussion: cosci-notes/project-setup-0 - pats-claude-code turn
+6f74418  Pat Example &lt;pat@example.org&gt;  discussion: cosci-notes/project-setup-0 - pats-claude-code turn
+002c922  Pat Example &lt;pat@example.org&gt;  discussion: cosci-notes/project-setup-0 - new thread</code></pre>
+<h2 id="2-cosci-learns-from-it">2. cosci learns from it</h2>
+<p>Learning starts in the background after a call on the current thread, at most once every 30 minutes per lab. It runs Pat's own <code>claude</code> command with no tools over the turns in Pat's private lab it has not read yet, and writes what it learned into that lab. Here the pass was started by hand with the server's command, which runs the knowledge-base tool <code>tools/brain.py</code>:</p>
+<pre><code>python3 ~/.cosci/tools/brain.py --config ~/.cosci-data/config.yml learn --home cosci-notes</code></pre>
+<p>Add <code>--estimate</code> to see what a pass would send, with no model call.</p>
+<p>The pass made one model call over 4 turns and pushed one commit, <code>4b5a33ad586f brain: learned from 4 turns</code>, which <code>cosci status</code> reports:</p>
+<pre><code>    cosci-notes        private   pat/cosci-notes                  ~/.cosci-data/pat__cosci-notes  (up to date)
+                     learn: learned from 4 turn(s) at 2026-10-20T09:01:43Z; commit 4b5a33ad586f, pushed</code></pre>
+<p>When Pat's agent next opened the thread, its outline listed three statements, each with an id, a standing (whose words it rests on) and a locator pointing to the exact turn where it was said:</p>
+<ul><li><code>cosci-notes/project-setup/priors-in-config-yaml</code>: "Set lens-model priors in config/priors.yaml; never hard-code priors inside a notebook." (pat's words) <code>cosci-notes@1c4444f97fe4:discussions/project-setup/project-setup-0.md#t2~14bb2b8580bc</code></li><li><code>cosci-notes/project-setup/alert-stream-antares</code>: "The project's alert stream comes from ANTARES." (pat's words) <code>…#t0~26e4f76d9b70</code></li><li><code>cosci-notes/project-setup/notebooks-location</code>: "The analysis notebooks live under notebooks/ in the project repo." (pat's words) <code>…#t0~26e4f76d9b70</code></li></ul>
+<p>All three are in Pat's private knowledge base; nobody else sees them yet.</p>
+<h2 id="3-pat-shares-one-statement">3. Pat shares one statement</h2>
+<p>The priors rule matters to everyone. In the private thread, Pat types:</p>
+<pre><code>cosci share cosci-notes/project-setup/priors-in-config-yaml</code></pre>
+<p>The agent, having no tool for sharing, relayed the line through <code>cosci_dispatch</code> and reported:</p>
+<ul><li>shared <code>cosci-notes/project-setup/priors-in-config-yaml</code> with <code>shared-repo</code> as <code>shared-repo/project-setup/priors-in-config-yaml</code></li><li>shared by <code>pat</code>; pushed</li></ul>
+<p>The shared lab got two commits in one push, <code>1c310c7b90f2</code> and then <code>412489d946db</code>. The first holds the passage the rule came from, so the statement in the second can point to a commit that already holds it. That copy holds only the passage and when it was said:</p>
+<pre><code>Recorded Tuesday October 20 2026 · 1:57 AM PDT.
+
+One more rule: the lens-model priors are set in config/priors.yaml; nobody hard-codes priors inside a notebook.</code></pre>
+<p>Pat's private lab keeps a line saying what was shared, when and where (commit <code>402f83e</code>). The other two statements stay private. Typing the same <code>cosci share</code> again changes nothing, and says so.</p>
+<h2 id="4-kim-installs">4. Kim installs</h2>
+<pre><code>~/.cosci-src/install.sh --shared lab/shared-repo --private local/notes --handle kim --git-name 'Kim Example' --git-email kim@example.org --learn off</code></pre>
+<pre><code>  handle    kim   (agents sign as kims-claude-code and kims-codex; commits are by Kim Example &lt;kim@example.org&gt;)
+  repos     shared-repo      shared    lab/shared-repo                  ~/.cosci-data/lab__shared-repo  (cloned)
+            notes            private   local only                       ~/.cosci-data/local__notes  (created)</code></pre>
+<p>The shared lab's key is <code>shared-repo</code> on both machines because it comes from the repo's GitHub name, so a locator written on one machine resolves on the other.</p>
+<h2 id="5-kims-agent-finds-the-rule-and-where-it-was-said">5. Kim's agent finds the rule, and where it was said</h2>
+<p>Kim starts <code>cosci</code>, opens a thread (<code>cosci open-thread kim-plan</code>, created in <code>notes</code>) and asks where the lens-model priors are set. The agent called <code>cosci_context</code> with the question and got the shared statement:</p>
+<ul><li>id <code>shared-repo/project-setup/priors-in-config-yaml</code>, kind instruction</li><li>"Set lens-model priors in config/priors.yaml; never hard-code priors inside a notebook."</li><li>standing: pat's words</li><li>source: <code>shared-repo@1c310c7b90f2:ledger/brain/evidence/a9258dc75367.md~a9258dc75367</code></li><li>under the topic <code>topic:shared-repo/project-setup</code> ("Project search setup")</li></ul>
+<p>Opening that source (<code>cosci_open</code>) returned the passage from step 3, so Kim's agent can state the rule as Pat's words and quote where Pat said it.</p>
+<h2 id="6-kims-agent-cannot-open-pats-private-turn">6. Kim's agent cannot open Pat's private turn</h2>
+<p>The shared copy keeps the statement's original link into Pat's private lab, which opens only on Pat's machine, where the <code>cosci-notes</code> repo is configured. Kim's agent tried to open it:</p>
+<pre><code>cosci-notes@1c4444f97fe4:discussions/project-setup/project-setup-0.md#t2~14bb2b8580bc</code></pre>
+<p>and was refused with <code>permission_denied</code>, reason <code>repo-not-configured</code>: thread <code>kim-plan</code> may not read <code>cosci-notes</code>, because no lab with that key is configured on Kim's machine, and another person's private lab cannot be read.</p>
+<p><code>cosci_read</code> on the same locator gives the same refusal. Kim's machine has no lab with that key, so there is nothing to grant: what Pat shared is all Kim's agent can see of Pat's work.</p>
+<h2 id="7-what-agents-learn-about-cosci-itself-reaches-everyone">7. What agents learn about cosci itself reaches everyone</h2>
+<p>Agents also record in the shared lab what they find about how cosci behaves, under "What agents have learned about running cosci". In the same run, Pat's machine recorded one with <code>cosci_observe</code>, under <code>idea:shared-repo/cosci/itself</code> ("How cosci itself behaves"): a statement shared from one machine reached a second machine's <code>cosci_context</code> on its next read, with no write from the second machine. Its standing was "observed by claude-code-agent on cosci 0.1.0, 2026-10-20", and it was pushed as commit <code>86e635a</code>.</p>
+<p>Kim's clone was one commit behind; Kim's next <code>cosci_context</code> fetched first and returned the finding, with no write from Kim. Findings are written as by "claude-code-agent", never a person, and are refused if they name you, a private lab or thread, or your home folder.</p>
+<p><a href="threads.html">threads.md</a> explains the knowledge base, permissions and sharing; <a href="skills.html">skills.md</a> lists the commands.</p>
+<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.194906), the same guides that come with CoSci.</p>
+</main>
+<aside class="toc"><b>On this page</b><a class="l2" href="#the-setup">The setup</a><a class="l2" href="#1-pat-records-a-thread">1. Pat records a thread</a><a class="l2" href="#2-cosci-learns-from-it">2. cosci learns from it</a><a class="l2" href="#3-pat-shares-one-statement">3. Pat shares one statement</a><a class="l2" href="#4-kim-installs">4. Kim installs</a><a class="l2" href="#5-kims-agent-finds-the-rule-and-where-it-was-said">5. Kim&#x27;s agent finds the rule, and where it was said</a><a class="l2" href="#6-kims-agent-cannot-open-pats-private-turn">6. Kim&#x27;s agent cannot open Pat&#x27;s private turn</a><a class="l2" href="#7-what-agents-learn-about-cosci-itself-reaches-everyone">7. What agents learn about cosci itself reaches everyone</a></aside>
+</div>
+</body>
+</html>

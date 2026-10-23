@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Threads and sharing · CoSci</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="in">
+<a class="brand" href="./">CoSci<span>.</span></a>
+<nav class="pages"><a href="quickstart.html">Quickstart</a><a href="guide.html">Guide</a><a href="install-reference.html">Installing</a><a href="rsp.html">Rubin Science Platform</a><a href="terminal-reference.html">In a terminal</a><a href="threads.html" class="on">Threads and sharing</a><a href="troubleshooting.html">Troubleshooting</a><a href="uninstall.html">Uninstall</a></nav>
+<a class="install-btn" href="install/">Install</a>
+</div></header>
+<div class="wrap">
+<main>
+<h1>Threads and sharing</h1>
+<h2 id="threads">Threads</h2>
+<p>A thread is a named conversation. Names are lowercase letters, digits and hyphens.</p>
+<pre><code>cosci open-thread project-setup</code></pre>
+<p><code>cosci open-thread</code> makes it the current thread for this session, creating it if the name is new. From then on every reply the agent gives you is appended to the thread and committed on your machine. For a lab on GitHub the commit is then pushed; a local-only lab keeps it on this machine. <code>cosci new-thread &lt;name&gt;</code> does the same but refuses a name that already exists, so it never joins an old conversation.</p>
+<pre><code>cosci list
+cosci status
+cosci catchup
+cosci close-thread</code></pre>
+<ul><li><code>cosci list</code> shows the active threads.</li><li><code>cosci status</code> reports the current thread, the band (whether it is recording), its permissions and the last few turns.</li><li><code>cosci catchup</code>, for returning days later, shows the status, recent turns in excerpt, and the latest human and agent turns in full.</li><li><code>cosci close-thread</code> returns you to an ordinary, unrecorded session.</li></ul>
+<p>A thread is stored in one lab: by default your private lab, where it is yours. To store it in a shared lab, name the lab by its key: <code>cosci new-thread shared-repo/survey-plan</code> (<code>cosci open-thread</code> takes the same form). A thread stored in a shared lab is readable by every member of that lab.</p>
+<p>Its folder, <code>discussions/&lt;thread&gt;/</code>, holds:</p>
+<ul><li>the turns, in numbered files (<code>project-setup-0.md</code>, then <code>-1.md</code>, and so on)</li><li>a small telemetry file per chunk</li><li>the thread's permission file, <code>&lt;thread&gt;.meta.yml</code></li></ul>
+<p>When a chunk passes about 40 KB or 50 turns, the next append starts a new one and ends the old file with <code>→ continued in project-setup-1.md</code>. Nothing already committed is rewritten.</p>
+<h2 id="turns">Turns</h2>
+<p>A turn is one <code>##</code> block in a chunk file: your messages are human turns, the agent's replies agent turns. cosci ends each agent turn with two lines:</p>
+<pre><code>[runtime: harness=claude-code harness_version=2.1.304 model=claude-sonnet-5-5 mode=careful runtime_contract=omit-unknown]
+
+[committed: 8d11af1d3dfe files=2]</code></pre>
+<p>The <code>[runtime: ...]</code> line records which agent, version and model produced the turn. A value the agent does not expose is left out; cosci never guesses one. The <code>[committed: ...]</code> stamp holds a 12-character hash of the turn's own content and the number of files in its commit. A hand-edited turn no longer matches its stamp, and replaying an identical turn returns the original commit and records nothing new.</p>
+<p>After each append the agent shows you the recorded turn, with the runtime line in plain words, and then the footer:</p>
+<pre><code>## Tuesday October 20 2026 · 1:57 AM PDT · pats-claude-code (claude-code)
+
+Understood: lens-model priors live in config/priors.yaml, and no notebook hard-codes them.
+
+⚙ Claude Sonnet 5.5 in Claude Code 2.1.304 · careful · effort unavailable
+
+[committed: 8d11af1d3dfe files=2]
+
+→ committed 1c4444f to discussions/project-setup/project-setup-0.md</code></pre>
+<p>The turn you see is the one in the file. A local-only lab shows only the <code>committed</code> line. When a push to GitHub has to wait (offline, or GitHub refused your credentials), a second footer line says <code>→ not pushed yet: saved on this machine only, not on GitHub (…). The next cosci write pushes it</code>.</p>
+<p>Times in turn headers use the <code>timezone</code> in your <code>config.yml</code>; see <a href="configuration.html#principals-and-timezone">configuration.md</a>.</p>
+<h2 id="the-band">The band</h2>
+<p>The band is the recording switch for the current thread. While it is open, every reply is recorded. While it is closed, nothing is appended.</p>
+<pre><code>cosci close-band
+cosci open-band</code></pre>
+<p><code>cosci set-band open</code> or <code>cosci set-band closed</code> does the same. There is no per-turn exemption. Only you change the band (see <a href="#permissions">Permissions</a>); if you ask the agent not to record something, it should tell you to close the band yourself.</p>
+<p>The band belongs to one running session. It is a marker under <code>discussions/.cosci-local/</code>, which is never committed, so closing it in one window does not silence a session open elsewhere.</p>
+<pre><code>cosci quiet
+cosci unquiet</code></pre>
+<p>These hide or show the commit footer for this session. Recording is unchanged.</p>
+<h2 id="permissions">Permissions</h2>
+<p>Each thread's permission file, <code>discussions/&lt;thread&gt;/&lt;thread&gt;.meta.yml</code>, decides what it may read and write. From the example run:</p>
+<pre><code>name: project-setup
+home_repo: cosci-notes
+permissions:
+  cosci-notes: read-write
+default_write: deny
+participants:
+- pats-claude-code
+created: "Tuesday October 20 2026 \xB7 1:57 AM PDT"
+status: active
+turn_policy: linear</code></pre>
+<p><code>permissions</code> maps a lab's key (the names under <code>repos:</code> in <code>config.yml</code>) to <code>none</code>, <code>read</code> or <code>read-write</code>. A lab not listed gets the <code>thread_defaults</code> of the lab the thread is stored in.</p>
+<p>By default:</p>
+<ul><li>A thread stored in your private lab may write it, and may read every shared lab you have joined and the installed cosci code.</li><li>A thread stored in a shared lab may write it and read the cosci code. It can never read a private lab, so the agent there has no access to your private records.</li></ul>
+<p>Writes are denied unless the file allows them (<code>default_write: deny</code>). A write to a lab where the thread lacks <code>read-write</code> is refused, with nothing written. A read of a lab not configured on this machine, such as another person's private lab named by a locator, is refused with reason <code>repo-not-configured</code>; there is nothing to grant.</p>
+<p>Only you type <code>cosci close-band</code>, <code>cosci open-band</code> (or <code>cosci set-band</code>), <code>cosci grant</code> and <code>cosci share</code>. The agent has no tool for them: it relays what you typed and is instructed never to issue one.</p>
+<pre><code>cosci permissions</code></pre>
+<p>This prints the thread's permission on every configured lab, and whether it is set in the file or inherited from a default. It changes nothing.</p>
+<h3 id="several-labs">Several labs</h3>
+<p>You can join more than one shared lab; each is independent. The lab a thread is stored in decides what it may read:</p>
+<ul><li>A thread stored in your private lab reads your private lab and every shared lab you have joined.</li><li>A thread stored in lab A reads and writes lab A. It can never read a private lab. It cannot read lab B unless you type <code>cosci grant lab-b read</code> in that thread.</li><li>Nothing is copied between labs automatically. Content moves when you share it, when you grant a thread <code>read-write</code> on another lab, and through agents' notes about running cosci in a shared lab the thread may read.</li><li>Membership of lab A gives no access to lab B, and cosci never pools or syncs labs; GitHub access decides who can see each lab. Only someone who has joined both can grant a thread access to the other lab. What that conversation draws on can then appear in the labs it writes to, for their members to see. Lab A members who are not in lab B gain no access to lab B.</li></ul>
+<p>Search (<code>cosci_search</code>) covers every lab the current thread may read; <code>repos=[...]</code> narrows it. See the guide's <a href="guide.html#work-with-several-labs">Work with several labs</a>.</p>
+<h2 id="cosci-grant"><code>cosci grant</code></h2>
+<pre><code>cosci grant shared-repo read-write
+cosci grant shared-repo read</code></pre>
+<p><code>cosci grant &lt;lab&gt; &lt;none|read|read-write&gt;</code> edits the current thread's permission file and commits the change with a message naming the before and after state and who authorized it:</p>
+<pre><code>permissions: cosci-notes/project-setup - shared-repo read -&gt; read-write (authorized by pat)</code></pre>
+<p>Granting a private thread <code>read-write</code> on a shared lab lets the agent write that thread's content there. Grant the narrowest access that works; <code>none</code> takes a grant back.</p>
+<p>Two limits always hold:</p>
+<ul><li>No grant can give a thread stored in a shared lab any access to a private lab.</li><li>A thread cannot drop below <code>read-write</code> on the lab it is stored in.</li></ul>
+<p><code>cosci tidy</code> lists every cross-repo write grant. It changes nothing unless you add <code>--apply</code>.</p>
+<h2 id="recording-things-said-elsewhere">Recording things said elsewhere</h2>
+<pre><code>cosci as kim: We agreed to use the DP1 alerts for the first pass.
+cosci include-last 4</code></pre>
+<ul><li><code>cosci as &lt;handle&gt;: &lt;message&gt;</code> records one human turn in that person's words, verbatim, for a decision made in a meeting or another window.</li><li><code>cosci include-last &lt;N&gt;</code> adds the last N turns of this session from before recording started, when the agent can supply that history.</li><li><code>cosci include-from "&lt;phrase&gt;"</code> does the same from the turn that contains the phrase.</li><li><code>cosci log-as &lt;name&gt;</code> starts recording the current exchange as a new thread.</li></ul>
+<h2 id="the-knowledge-base">The knowledge base</h2>
+<p>Each lab also keeps a knowledge base: an outline of topics and ideas with statements under them, stored as events under <code>ledger/brain/</code>.</p>
+<p>Each statement links to where it was said with a locator such as <code>cosci-notes@1c4444f97fe4:discussions/project-setup/project-setup-0.md#t2~14bb2b8580bc</code>, naming the lab, commit, file and turn. It also says whose words it rests on: "pat's words", "confirmed by pat", or "inferred from pat's words". Statement ids start with the lab's key (<code>cosci-notes/project-setup/priors-in-config-yaml</code>), so different people's knowledge bases never collide.</p>
+<p>When a thread opens, the agent receives the outline from every lab the thread may read, from each root down to what this thread touches, including open tensions. A statement whose source the reader cannot open is left out.</p>
+<p>Before reading, cosci fetches each readable lab, at most once a minute, to see what others pushed. A lab it could not fetch is read from disk and named in the reply's <code>not_fresh</code>.</p>
+<p>An agent about to act on something only inferred, where another reading would change what it does next, asks you in one line. Your answer is recorded as confirmation or correction.</p>
+<pre><code>/cosci:context where are the lens-model priors set?
+/cosci:search ANTARES; alert stream</code></pre>
+<p>A background job learns your private knowledge base from your threads with your own <code>claude</code> or <code>codex</code> command; <a href="configuration.html#learning">configuration.md</a> says what it runs, how often and what it costs.</p>
+<p>A shared lab's knowledge base learns from the lab's own threads, including what members share there, and from agents' notes about running cosci. Nothing from your private knowledge base reaches it unless you share it.</p>
+<h2 id="notes-about-running-cosci">Notes about running cosci</h2>
+<p>Each shared lab also holds "What agents have learned about running cosci": how cosci, Claude Code and Codex behave in each environment, version by version. Agents read it before experimenting and add to it with <code>cosci_observe</code>; you can prompt one with <code>/cosci:observe &lt;finding&gt;</code>.</p>
+<p>This is the one write an agent makes outside the lab its thread is stored in without a grant. It is narrow:</p>
+<ul><li>A finding goes under that root only.</li><li>It comes from a thread that may read that shared lab.</li><li>It is written as by "claude-code-agent" or "codex-agent", never by a person.</li><li>It is refused when its text names you or another configured person, a private lab or thread, or your home folder, or when it cites a locator.</li></ul>
+<h2 id="sharing">Sharing</h2>
+<p>You can share anything from your private lab with a shared lab: a note in your own words, an excerpt of a thread, an idea from your knowledge base, or a single statement. In the CoSci window, what you share lands as your post in a lab thread you choose; the lab's members and their agents read it there, and the lab's knowledge base learns from it like any other conversation.</p>
+<p>Nothing leaves your private lab until you share it, and it goes only to the lab you choose. Before anything that looks private leaves (a person's name, a private lab or thread name, your home folder, a link into your private lab), the window warns you first, and <code>cosci share</code> refuses it.</p>
+<h3 id="cosci-share"><code>cosci share</code></h3>
+<p>In a session, <code>cosci share</code> shares statements from your private knowledge base:</p>
+<pre><code>cosci share cosci-notes/project-setup/priors-in-config-yaml</code></pre>
+<p>The statement is copied into the lab's knowledge base, with the passage it came from, so the lab's agents can see its source without opening your private lab. The agent may suggest something to share, naming the id (from the outline) and what the lab would see, but only you type the command. (A thread you grant <code>read-write</code> on a shared lab can also write its conversation there; see <a href="#cosci-grant"><code>cosci grant</code></a>.)</p>
+<ul><li>The copy records the sharing as your act ("pat's words") and keeps the links back into your private lab, which only you can open.</li><li>The lab gets one push of two commits: the passage first, then the statement that points to it, because a link names a commit that already holds its text. Your private lab keeps a line saying what you shared, when and where.</li></ul>
+<p><code>cosci share</code> rules:</p>
+<ul><li>Type it in a thread stored in your private lab.</li><li>You need to have joined a shared lab. <code>--to &lt;key&gt;</code> names it, for example <code>cosci share &lt;id&gt; --to lab-b</code>. You may leave it out only when you have joined exactly one shared lab; with several, cosci refuses and asks you to name one.</li><li>It refuses any statement whose text names you, your home folder, or a private lab or thread. Nothing is shared by halves: if one statement is refused, none is shared.</li><li>Sharing the same statement again changes nothing, and says so.</li></ul>
+<p><a href="walkthrough.html">walkthrough.md</a> shows sharing end to end.</p>
+<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.194906), the same guides that come with CoSci.</p>
+</main>
+<aside class="toc"><b>On this page</b><a class="l2" href="#threads">Threads</a><a class="l2" href="#turns">Turns</a><a class="l2" href="#the-band">The band</a><a class="l2" href="#permissions">Permissions</a><a class="l3" href="#several-labs">Several labs</a><a class="l2" href="#cosci-grant">cosci grant</a><a class="l2" href="#recording-things-said-elsewhere">Recording things said elsewhere</a><a class="l2" href="#the-knowledge-base">The knowledge base</a><a class="l2" href="#notes-about-running-cosci">Notes about running cosci</a><a class="l2" href="#sharing">Sharing</a><a class="l3" href="#cosci-share">cosci share</a></aside>
+</div>
+</body>
+</html>

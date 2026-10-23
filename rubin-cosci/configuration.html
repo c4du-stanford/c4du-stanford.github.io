@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Configuration · CoSci</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="in">
+<a class="brand" href="./">CoSci<span>.</span></a>
+<nav class="pages"><a href="quickstart.html">Quickstart</a><a href="guide.html">Guide</a><a href="install-reference.html">Installing</a><a href="rsp.html">Rubin Science Platform</a><a href="terminal-reference.html">In a terminal</a><a href="threads.html">Threads and sharing</a><a href="troubleshooting.html">Troubleshooting</a><a href="uninstall.html">Uninstall</a></nav>
+<a class="install-btn" href="install/">Install</a>
+</div></header>
+<div class="wrap">
+<main>
+<h1>Configuration</h1>
+<p>cosci keeps two settings files on each machine:</p>
+<ul><li><code>~/.cosci-data/config.yml</code> lists your labs' repos and their read and write permissions.</li><li><code>~/.cosci/settings.json</code> holds your login, learning settings and update source.</li></ul>
+<p>Neither file is committed: both contain this machine's paths. Re-running the installer or joining a lab preserves existing entries. You can also edit <code>config.yml</code> by hand. Joining through an agent's MCP tool refreshes that session immediately; restart a running agent after changes made from another process or by hand.</p>
+<p>Names in the examples are made up: <code>pat</code> is an example GitHub login, and <code>OWNER/SHARED-REPO</code> stands for a shared lab's repo.</p>
+<p>A fresh install creates your private lab on this machine only (<code>local/notes</code>, at <code>~/.cosci-data/local__notes</code>); <code>--create-private</code> creates <code>&lt;login&gt;/cosci-notes</code> on GitHub instead. An existing installation keeps its configured repos and locations. No GitHub data repo is renamed or moved.</p>
+<h2 id="where-things-live">Where things live</h2>
+<div class="table"><table><thead><tr><th>What</th><th>Where</th><th>Notes</th></tr></thead><tbody><tr><td>The harness (cosci code, skills, prompts)</td><td><code>~/.cosci</code></td><td>A local git repository: releases on branch <code>base</code>, your changes on <code>main</code>. Never pushed. See <a href="harness.html">harness.md</a>.</td></tr><tr><td>CoSci's Python environment</td><td><code>~/.cosci/venv</code></td><td>Made by the installer (<code>python3 -m venv</code>) with PyYAML, and pywebview on a Mac. <code>cosci</code>, the CoSci app, the MCP server and the hooks run with it. Not made when <code>COSCI_PYTHON</code> names a Python of your own. Removed with the harness.</td></tr><tr><td>CoSci's GitHub CLI</td><td><code>~/.cosci/gh</code></td><td>Only when the guided install put a copy of <code>gh</code> there. Removed with the harness.</td></tr><tr><td>The <code>cosci</code> command</td><td><code>~/.local/bin/cosci</code> → <code>~/.cosci/bin/cosci</code></td><td>Not linked with <code>--no-link</code>; then run <code>~/.cosci/bin/cosci</code>.</td></tr><tr><td><code>~/.local/bin</code> on PATH</td><td>one line marked <code># added by the cosci installer</code> in <code>~/.zprofile</code> (zsh), <code>~/.bash_profile</code> (bash on a Mac) or <code>~/.bashrc</code> (bash elsewhere)</td><td>Added only when <code>~/.local/bin</code> is not on PATH; not with <code>--no-path</code>. <code>cosci uninstall</code> removes it.</td></tr><tr><td>Install-local settings</td><td><code>~/.cosci/settings.json</code></td><td>handle, learner, where updates come from (the release repo or the source clone), release, commit identity.</td></tr><tr><td>Machine configuration</td><td><code>~/.cosci-data/config.yml</code></td><td>repos with their layer (<code>private</code> for your private lab, <code>shared</code> for a shared lab), remote and path; principals; timezone.</td></tr><tr><td>Your data repos</td><td><code>~/.cosci-data/&lt;owner&gt;__&lt;repo&gt;</code></td><td>e.g. <code>~/.cosci-data/pat__cosci-notes</code> and <code>~/.cosci-data/owner__shared-repo</code>; a local-only repo is <code>~/.cosci-data/local__&lt;name&gt;</code>.</td></tr><tr><td>Session scratch folder</td><td><code>~/.cosci-data/workspace</code></td><td>Working directory of a session that names no directory. Holds no part of the record.</td></tr><tr><td>Per-session files</td><td><code>~/.cosci/run/</code></td><td>What <code>cosci</code> hands to <code>claude</code> or <code>codex</code> for one session (<code>mcp-&lt;pid&gt;.json</code>, <code>harness-&lt;pid&gt;.md</code>, <code>settings-&lt;pid&gt;.json</code>, <code>codex-&lt;pid&gt;.md</code>); removed at the next launch once the session has ended.</td></tr><tr><td>Learner failures</td><td><code>~/.cosci-data/learn.log</code></td><td>Read by <code>cosci status</code>. Each repo's last learning pass is in its git-ignored <code>discussions/.cosci-local/</code>.</td></tr><tr><td>The source clone</td><td><code>~/.cosci-src</code></td><td>Clone installs only: what you cloned; <code>cosci update</code> reads its release tags. An install from the install page keeps no copy of the release: the installer unpacks the release it carries into a temporary folder, runs it and removes it.</td></tr><tr><td>Search index</td><td><code>~/.cache/cosci/brain-index</code></td><td>Built from the repos you can read, so it holds text from your private turns. Under <code>$XDG_CACHE_HOME</code> when set, or wherever <code>COSCI_BRAIN_CACHE</code> names. Deleting it only slows the next read. <code>cosci uninstall</code> removes the default location.</td></tr><tr><td>Python API registration</td><td><code>cosci.pth</code> in the site-packages of the Python that installed cosci: <code>~/.cosci/venv</code> by default; with <code>COSCI_PYTHON</code>, that Python's virtual environment or user site</td><td>Points to the installed application. <code>cosci status</code> shows its path. Uninstall removes only this installation's registration. See <a href="python-api.html">python-api.md</a>.</td></tr></tbody></table></div>
+<p><code>--install-root</code> moves the harness, with its Python environment and GitHub CLI copy; <code>--data-root</code> moves <code>~/.cosci-data</code>.</p>
+<p>cosci writes nothing under <code>~/.claude</code> or <code>~/.codex</code> and creates no <code>.mcp.json</code>, <code>CLAUDE.md</code> or <code>AGENTS.md</code>. It reaches a session only through flags to <code>claude</code> (<code>--mcp-config</code>, <code>--plugin-dir</code>, <code>--append-system-prompt-file</code>, <code>--settings</code>) or to <code>codex</code> (<code>-c mcp_servers.cosci.*</code>, <code>-c developer_instructions=...</code>). <code>cosci --dry-run</code> and <code>cosci codex --dry-run</code> print the command.</p>
+<h2 id="configyml">config.yml</h2>
+<p>The installer's output for a private and a shared lab (comments omitted):</p>
+<pre><code>manager:
+  repo: local/cosci
+principals:
+- pat
+timezone: America/Los_Angeles
+repos:
+  manager:
+    repo: local/cosci
+    layer: harness
+    path: /home/pat/.cosci
+  cosci-notes:
+    repo: pat/cosci-notes
+    layer: private
+    remote: pat/cosci-notes
+    path: /home/pat/.cosci-data/pat__cosci-notes
+    thread_defaults:
+      self: read-write
+      others: none
+      manager: read
+      shared: read
+  shared-repo:
+    repo: OWNER/SHARED-REPO
+    layer: shared
+    remote: OWNER/SHARED-REPO
+    path: /home/pat/.cosci-data/owner__shared-repo
+    thread_defaults:
+      self: read-write
+      others: none
+      manager: read
+defaults:
+  default_write: deny
+capture:
+  commentary: skip-short</code></pre>
+<h3 id="repos-and-their-keys">repos and their keys</h3>
+<p><code>repos:</code> maps a key to a repo. The key is the name you type (<code>cosci new-thread shared-repo/&lt;name&gt;</code>, <code>cosci grant shared-repo read</code>), the name in a thread's permission file, and the first part of every locator and statement id that cites the repo (<code>shared-repo@1c310c7b90f2:…</code>, <code>shared-repo/project-setup/priors-in-config-yaml</code>).</p>
+<p>A GitHub repo's key is its name, lowercased, with characters other than letters, digits and hyphens turned into hyphens (<code>OWNER/SHARED-REPO</code> is <code>shared-repo</code>); you do not choose it. Every machine gives a shared lab the same key, so citations resolve across machines. You can configure several shared labs, each with its own key.</p>
+<p>If another configured repo already holds that name, a shared newcomer is refused, since colleagues cite it by its plain name; first remove or rename the entry that holds it. A private newcomer gets <code>owner__name</code> (<code>pat__notes</code>), with a warning that citations of it made on other machines will not resolve here.</p>
+<p>A repo named <code>manager</code> is always <code>owner__manager</code>. A local-only repo keeps the name you give it (<code>local/&lt;name&gt;</code>). A key never changes once configured.</p>
+<p>Each entry has:</p>
+<ul><li><code>repo</code>: the full name, <code>owner/name</code>, or <code>local/&lt;name&gt;</code> for a repo that exists only on this machine.</li><li><code>layer</code>: <code>private</code> (a private lab), <code>shared</code> (a shared lab) or <code>harness</code> (below).</li><li><code>remote</code>: the GitHub <code>owner/repo</code> the clone syncs with, or <code>null</code> for a local-only repo.</li><li><code>path</code>: the clone on disk.</li><li><code>thread_defaults</code>: the permission (<code>none</code>, <code>read</code> or <code>read-write</code>) a thread stored in this repo starts with on <code>self</code> (this repo), <code>others</code> (every other data repo), <code>manager</code> (the installed cosci code) and <code>shared</code> (a shared lab). Widening one widens every thread stored in the repo; grant per thread with <code>cosci grant</code>.</li></ul>
+<h3 id="layer">layer</h3>
+<ul><li><code>private</code>: your private lab, by default <code>local/notes</code> on this machine only; on GitHub (<code>--create-private</code>), <code>&lt;login&gt;/cosci-notes</code> on your personal account, because an organisation's owners can read every private repo in it. It holds your threads, logged in full, and the private knowledge base learned from them. Threads stored here may read your shared labs.</li><li><code>shared</code>: a shared lab's GitHub repo. It holds the lab's threads and knowledge base, what members <a href="threads.html#sharing">share</a> from their private labs, and what agents have learned about running cosci. A thread stored here can never read a private lab, whatever its grants say.</li><li><code>harness</code>: the installed cosci code at <code>~/.cosci</code> (the <code>manager</code> entry). Threads can always read it and never write it.</li></ul>
+<h3 id="principals-and-timezone">principals and timezone</h3>
+<p><code>principals</code> lists the GitHub logins whose words count as the people's words in the knowledge base ("pat's words"). The installer adds yours. <code>cosci share</code> and notes about running cosci refuse text naming any of them.</p>
+<p><code>timezone</code> is the IANA zone turn headers are shown in (<code>America/Los_Angeles</code>, <code>Europe/Paris</code>, <code>UTC</code>). The installer writes this machine's zone or the one you pass with <code>--timezone</code>. Stored times are explicit, so changing the zone changes only how new headers read.</p>
+<h3 id="defaults">defaults</h3>
+<p><code>defaults.default_write: deny</code> denies writes unless a thread's permission file says otherwise. Leave it.</p>
+<h3 id="capture">capture</h3>
+<p><code>capture.commentary</code> sets what the Claude Code capture hooks keep of an agent's narration while it works:</p>
+<ul><li><code>skip-short</code> (the installer's choice): keep each final answer and any substantial interim message, and drop short tool preambles.</li><li><code>record</code> (when the key is absent): keep every visible message.</li><li><code>skip</code>: keep only the final answer.</li></ul>
+<p><code>capture.commentary_min_chars</code> (default 280) is the length that counts as substantial.</p>
+<h2 id="adding-a-lab">Adding a lab</h2>
+<p>The <a href="guide.html#join-an-existing-lab">guide</a> shows joining through the terminal, an agent or Python; each uses the same join operation. <code>OWNER/SHARED-REPO</code> below is a placeholder for your lab's repo, and <code>pat</code> is an example login. In your terminal:</p>
+<pre><code>cosci join OWNER/SHARED-REPO
+cosci join pat/research-notes --private
+cosci join local/papers --private</code></pre>
+<p>The default is a shared lab. <code>--private</code> adds it as your private lab; the older <code>--layer private</code> and <code>--layer shared</code> options also work. A GitHub repo must already exist and be accessible using your git credentials. Joining never creates one. A <code>local/</code> repo stays on your machine and has no GitHub remote.</p>
+<p>Joining copies the repo to your data directory, sets your commit identity and adds it to <code>config.yml</code>. A GitHub repo's key comes from its name, so colleagues use matching keys in citations. <code>--protocol ssh</code> selects SSH. <code>--key</code> can name a local-only repo; for a GitHub repo it may only repeat the derived key.</p>
+<p>cosci has no <code>create</code> command. One member <a href="guide.html#start-a-new-lab">starts the lab</a>, either with the installer's <code>--create-shared</code> option or by creating an empty private repo on GitHub and joining it, and gives colleagues write access on GitHub; everyone else joins it. You can join several labs; see <a href="guide.html#work-with-several-labs">working with several labs</a>. You can install with just your private lab and join a shared lab later. A successful MCP join makes the lab available in that session immediately. After joining from Bash or Python, restart any agent session already running in another process.</p>
+<p>Joining does not widen an existing thread's write permissions. To hold a conversation in the shared lab, type <code>cosci new-thread shared-repo/&lt;thread-name&gt;</code> to your agent. See <a href="threads.html">threads</a> for access grants and sharing.</p>
+<p>To change your login or setup, re-run the installer or type <code>cosci reset</code> in an agent session. See the <a href="python-api.html">Python API guide</a> for direct imports and joining from a script.</p>
+<h2 id="settingsjson">settings.json</h2>
+<p><code>~/.cosci/settings.json</code> holds:</p>
+<ul><li><code>handle</code>: your GitHub login, lowercased. Your agents sign as <code>&lt;handle&gt;s-claude-code</code> and <code>&lt;handle&gt;s-codex</code>.</li><li><code>learn</code>: <code>claude</code>, <code>codex</code> or <code>off</code> (below).</li><li><code>capture_hooks</code>: <code>true</code> by default. Claude Code sessions then get capture hooks through <code>--settings</code>, a silent backstop that records a reply the agent forgot to append. Codex reads hooks only from <code>~/.codex</code>, which cosci never edits, so Codex sessions have none.</li><li><code>git_name</code>, <code>git_email</code>: the identity your commits use, from your git config or <code>--git-name</code> / <code>--git-email</code>. The installer sets it on each data repo.</li><li><code>gh</code>: the GitHub CLI cosci's own git commands sign in to GitHub through, when you signed in during the guided install and kept that sign-in for CoSci only (CoSci's copy at <code>~/.cosci/gh/bin/gh</code>, or your own <code>gh</code>). Absent otherwise: git then uses your own credential setup.</li><li><code>python_api_pth</code>: where the <a href="python-api.html">Python API</a> is registered.</li><li><code>protocol</code>: <code>https</code> or <code>ssh</code>, for clones.</li><li><code>install_url</code>: for an install from the install page, the release repo <code>cosci update</code> fetches with git (<code>https://github.com/stanford-developers/rubin-cosci-install</code>); <code>null</code> for a clone install.</li><li><code>source</code>: for a clone install, the clone <code>cosci update</code> reads; <code>null</code> for an install from the install page. Re-running the installer the other way switches between the two.</li><li><code>release_ref</code>, <code>version</code>, <code>installed_at</code>: what is installed.</li><li><code>data_root</code>, <code>config</code>: where the data repos and <code>config.yml</code> are.</li></ul>
+<h2 id="learning">Learning</h2>
+<p>A call on the current thread may start a background learning pass for the repo the thread is stored in. A pass:</p>
+<ol><li>Reads the repo's unread turns.</li><li>Asks a model what they establish.</li><li>Checks every proposed entry in code: it must cite existing passages and say correctly whose words they are, or it is dropped.</li><li>Publishes the result to the same repo in one commit, pushed to GitHub.</li></ol>
+<p>It learns only a repo's own turns into that repo's knowledge base.</p>
+<p>The model call is your own agent command, run non-interactively as you:</p>
+<ul><li><code>learn: claude</code> runs <code>claude -p --output-format json --model sonnet</code> with no tools, no MCP servers, no saved session and all hooks disabled, in an empty temporary folder, with the prompt on stdin.</li><li><code>learn: codex</code> runs <code>codex exec --json --ephemeral --sandbox read-only</code> with Codex's default model.</li><li><code>learn: off</code> never starts one.</li></ul>
+<p>The default is <code>claude</code> when <code>claude</code> is on your PATH, else <code>off</code>; choose with <code>--learn</code> at install time or edit <code>settings.json</code>.</p>
+<p>The calls are billed to your own Claude or Codex account:</p>
+<ul><li>A pass starts at most once every 30 minutes per repo, never while the previous one runs.</li><li>It makes no model call when there are no unread turns.</li><li>A few new turns take one call (in the end-to-end run, 4 turns took one call to Sonnet); a long backlog takes more.</li><li>Each call has a time limit: 420 seconds, longer for very long prompts.</li></ul>
+<p>To see what a pass would take before it runs:</p>
+<pre><code>python3 ~/.cosci/tools/brain.py --config ~/.cosci-data/config.yml learn --home cosci-notes --estimate</code></pre>
+<p>It counts the turns, passes, calls and prompt size, and calls no model. A failed pass never affects your session. It is logged, and <code>cosci status</code> shows each repo's last pass (<code>learned from 4 turn(s) at …; commit 4b5a33ad586f, pushed</code>, <code>nothing new to learn</code>, or the error).</p>
+<h2 id="environment-variables">Environment variables</h2>
+<p><code>cosci</code> sets these per session in <code>~/.cosci/run/mcp-&lt;pid&gt;.json</code> (Claude Code) or the <code>-c mcp_servers.cosci.env</code> override (Codex). Do not set them yourself:</p>
+<div class="table"><table><thead><tr><th>Variable</th><th>Meaning</th></tr></thead><tbody><tr><td><code>COSCI_CONFIG</code></td><td>The <code>config.yml</code> to use.</td></tr><tr><td><code>COSCI_HANDLE</code></td><td>The agent's handle in turn headers, e.g. <code>pats-claude-code</code>.</td></tr><tr><td><code>COSCI_HUMAN_HANDLE</code></td><td>Your handle, how your turns are attributed.</td></tr><tr><td><code>COSCI_HARNESS</code></td><td><code>claude-code</code> or <code>codex</code>, recorded in each turn's runtime line.</td></tr><tr><td><code>COSCI_HARNESS_REF</code>, <code>COSCI_ROOT</code></td><td>The harness version the session runs, and where.</td></tr><tr><td><code>COSCI_REPO</code></td><td>The lab a thread created without one is stored in: your private lab when you have one.</td></tr><tr><td><code>COSCI_LEARN</code>, <code>COSCI_LEARN_LOG</code></td><td>The learner setting and its failure log.</td></tr></tbody></table></div>
+<p>You may set these in the shell you start <code>cosci</code> from:</p>
+<div class="table"><table><thead><tr><th>Variable</th><th>Meaning</th></tr></thead><tbody><tr><td><code>COSCI_PYTHON</code></td><td>A Python of your own that runs cosci and its server, used as it is; it must have PyYAML. Default: CoSci's own environment, <code>~/.cosci/venv/bin/python</code> (or <code>python3</code> on your PATH when there is none).</td></tr><tr><td><code>COSCI_GH</code></td><td>The <code>gh</code> cosci's git commands sign in to GitHub through. The installer remembers its choice as <code>gh</code> in <code>settings.json</code>, so you rarely set this.</td></tr><tr><td><code>COSCI_CLAUDE</code>, <code>COSCI_CODEX</code></td><td>The <code>claude</code> or <code>codex</code> executable to start, when not the one on your PATH.</td></tr><tr><td><code>COSCI_GIT_TIMEOUT</code></td><td>Seconds a clone or fetch by <code>install.sh</code>, <code>cosci join</code> or <code>cosci status --fetch</code> may take (default 300).</td></tr><tr><td><code>COSCI_NO_PULL</code></td><td><code>1</code> to never fetch: reads and writes use the clones as they are.</td></tr><tr><td><code>COSCI_FRESHEN_EVERY</code></td><td>Seconds between fetches of one clone before a read (default 60).</td></tr><tr><td><code>COSCI_PROMPT_CONTEXT_SECONDS</code></td><td>How long the prompt hook waits for the knowledge base's context (default 30).</td></tr><tr><td><code>COSCI_LEARN_MODEL</code></td><td>The model the learner asks for. Defaults: <code>sonnet</code> (Claude) and Codex's default model.</td></tr></tbody></table></div>
+<p>None is a secret. cosci reads no credential from the environment; git uses your own credential setup, or asks <code>gh</code> when <code>COSCI_GH</code> (or the <code>gh</code> setting) names one.</p>
+<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.194906), the same guides that come with CoSci.</p>
+</main>
+<aside class="toc"><b>On this page</b><a class="l2" href="#where-things-live">Where things live</a><a class="l2" href="#configyml">config.yml</a><a class="l3" href="#repos-and-their-keys">repos and their keys</a><a class="l3" href="#layer">layer</a><a class="l3" href="#principals-and-timezone">principals and timezone</a><a class="l3" href="#defaults">defaults</a><a class="l3" href="#capture">capture</a><a class="l2" href="#adding-a-lab">Adding a lab</a><a class="l2" href="#settingsjson">settings.json</a><a class="l2" href="#learning">Learning</a><a class="l2" href="#environment-variables">Environment variables</a></aside>
+</div>
+</body>
+</html>

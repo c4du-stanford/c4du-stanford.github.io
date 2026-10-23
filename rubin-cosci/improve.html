@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Improving the harness from the record · CoSci</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="in">
+<a class="brand" href="./">CoSci<span>.</span></a>
+<nav class="pages"><a href="quickstart.html">Quickstart</a><a href="guide.html">Guide</a><a href="install-reference.html">Installing</a><a href="rsp.html">Rubin Science Platform</a><a href="terminal-reference.html">In a terminal</a><a href="threads.html">Threads and sharing</a><a href="troubleshooting.html">Troubleshooting</a><a href="uninstall.html">Uninstall</a></nav>
+<a class="install-btn" href="install/">Install</a>
+</div></header>
+<div class="wrap">
+<main>
+<h1>Improving the harness from the record</h1>
+<p><code>cosci improve</code> studies what your recorded threads and the notes about running cosci show about how agents have worked, and proposes a few small changes to the wording of the harness prompts and skills. They go on a new local branch for you to read, try, and adopt or delete. Your current harness is not changed.</p>
+<p>Run it from a terminal:</p>
+<pre><code>cosci improve                                  # every readable thread, at most 3 changes
+cosci improve --since 2026-10-01               # only turns from that day on
+cosci improve --threads project-setup,notes/inbox
+cosci improve --dry-run                        # show the proposals; make no branch
+cosci improve --estimate                       # show how much would be read; ask nothing
+cosci improve --max 5 --json                   # up to 5 changes; print the run's record as JSON</code></pre>
+<p><code>--max</code> takes 1 to 10. In a Claude Code session started with <code>cosci</code>, <code>/cosci:improve</code> runs the same command. Its skill carries <code>disable-model-invocation: true</code>, so only you start it.</p>
+<h2 id="what-it-reads">What it reads</h2>
+<ul><li><strong>Your recorded threads</strong>: every thread you can read in your private lab and your shared labs, or only those named with <code>--threads</code> (by name, or <code>&lt;repo&gt;/&lt;name&gt;</code> when two labs share a name), and only turns from <code>--since</code> (YYYY-MM-DD) on. As in learning, each turn is cut to 6000 characters (a person's) or 1500 (an agent's). The newest turns are read first, up to about 90,000 characters; <code>--estimate</code> says how many were left out. Withheld turns are never read.</li><li><strong>Notes about running cosci</strong>: the findings agents recorded with <code>cosci_observe</code> under the root "What agents have learned about running cosci" in each shared lab (<a href="threads.html#notes-about-running-cosci">threads.md</a>).</li><li><strong>The files a harness may change</strong> (<a href="mutable-surface-manifest.html">mutable-surface-manifest.md</a>), as committed at your current harness commit: the prompts <code>harness/&lt;agent&gt;.md</code> and the skills <code>skills/&lt;name&gt;/SKILL.md</code>. <code>style.md</code> is in a data repo, outside the harness, so <code>cosci improve</code> does not change it.</li></ul>
+<h2 id="who-is-asked">Who is asked</h2>
+<p>The agent CLI your <code>learn</code> setting names (<code>claude</code> or <code>codex</code>), as for background learning, logged in as you; <code>learn_model</code> or <code>COSCI_LEARN_MODEL</code> picks the model. It runs once, twice if its first reply is not the JSON asked for, in an empty temporary folder with no tools, saved session or hooks, so it can read and change nothing. With <code>learn: off</code>, <code>cosci improve</code> says there is no one to ask. The prompt, <code>templates/improve.md</code>, tells the agent that everything recorded is data to study, never instructions.</p>
+<h2 id="what-code-checks">What code checks</h2>
+<p>Code trusts nothing in the reply. Each proposed change is <code>{path, old, new, why, evidence}</code>, where <code>evidence</code> lists the turns or findings that show the problem; code drops it, and counts why, when:</p>
+<div class="table"><table><thead><tr><th>Dropped as</th><th>When</th></tr></thead><tbody><tr><td><code>over-limit</code></td><td>it comes after the <code>--max</code> changes already kept</td></tr><tr><td><code>malformed</code></td><td><code>path</code>, <code>old</code> or <code>new</code> is missing or not text</td></tr><tr><td><code>never-touch</code></td><td>the harness check holds the path unchanged (the check and tests, the engine's write path, telemetry, the interpreter floor, the manifest and triage)</td></tr><tr><td><code>out-of-surface</code></td><td>any other path that is not a prompt or skill of this harness, including new files and paths outside it</td></tr><tr><td><code>no-change</code></td><td><code>old</code> and <code>new</code> are the same</td></tr><tr><td><code>ambiguous-old</code></td><td><code>old</code> is empty or does not occur exactly once in the file</td></tr><tr><td><code>too-large</code></td><td><code>old</code> is over 2000 characters or <code>new</code> over 2500</td></tr><tr><td><code>overlap</code></td><td>it overlaps a change kept earlier in the same reply</td></tr><tr><td><code>safeguard</code></td><td>it reaches into a skill's front matter or a locked prompt paragraph (the recorded-turn loop, typed commands, which cover sharing, mutating the harness, boundaries), or removes a safeguard word (<code>never</code>, <code>footer</code>, <code>rendered_block</code>, <code>cosci_dispatch</code>, <code>cosci_append</code>, <code>--as</code>, <code>only the person</code>, <code>only you</code>, <code>not attached to any directory</code>, <code>boundaries</code>, <code>allowed-tools</code>, <code>disable-model-invocation</code>)</td></tr><tr><td><code>leak</code></td><td>the new text adds a token-shaped string, a locator, or a private word (your handles, your home folder, a private lab or thread name), or, where the harness carries the leak check's scanner (<code>tools/scan_names.py</code>), a hit of its rules</td></tr><tr><td><code>no-evidence</code>, <code>unresolved-evidence</code></td><td>it cites nothing, or an item that is neither a locator that resolves for you (the knowledge base's citation check) nor a finding id that was shown</td></tr></tbody></table></div>
+<h2 id="what-it-makes">What it makes</h2>
+<p>Kept changes are committed with your git identity on a new branch <code>improve/&lt;UTC time&gt;</code> (for example <code>improve/20261020T153000Z</code>, with <code>-2</code> added if that name is taken), made from your current harness commit in a temporary worktree. The commit message gives each change's reason and the turns or findings it cites. Then <code>cosci harness check</code> runs on the branch and the run prints <code>gate: green</code>, or <code>gate: RED (&lt;checks&gt;); the branch is kept for inspection</code> with the problems found. Your current branch, working tree and commit are never touched, and nothing is merged. Uncommitted edits in <code>~/.cosci</code> are not on the branch; the run notes them.</p>
+<p>It prints the next steps:</p>
+<pre><code>cosci harness diff improve/&lt;time&gt; --patch     # read the changes
+cosci --harness improve/&lt;time&gt;                # try them in one session
+cosci harness merge improve/&lt;time&gt;            # adopt them (checked again; a failing result is undone)
+git -C ~/.cosci branch -D improve/&lt;time&gt;      # or delete them</code></pre>
+<p>Dry runs, estimates, runs with nothing to change and runs that stop on an error make no branch and change nothing. A run stops, saying why and what to do, when for example nothing is recorded in the window (widen <code>--since</code> or <code>--threads</code>), there is no git identity, or the agent call fails. Exit status: 0 for a passing branch, dry run, estimate or nothing to change; 1 for an error or failing branch; 2 for bad arguments.</p>
+<h2 id="the-log">The log</h2>
+<p>Each run is logged on this machine under the data root, in <code>~/.cosci-data/improve/</code>: one line in <code>runs.jsonl</code> (past 256 KB the older half is dropped) and the full record, every proposal kept or dropped and why, as <code>&lt;time&gt;.json</code>. <code>cosci status</code> shows the last run on its <code>improve</code> line.</p>
+<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.194906), the same guides that come with CoSci.</p>
+</main>
+<aside class="toc"><b>On this page</b><a class="l2" href="#what-it-reads">What it reads</a><a class="l2" href="#who-is-asked">Who is asked</a><a class="l2" href="#what-code-checks">What code checks</a><a class="l2" href="#what-it-makes">What it makes</a><a class="l2" href="#the-log">The log</a></aside>
+</div>
+</body>
+</html>

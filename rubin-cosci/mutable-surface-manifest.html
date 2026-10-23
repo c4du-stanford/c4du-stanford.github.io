@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cosci mutable-surface manifest · CoSci</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="in">
+<a class="brand" href="./">CoSci<span>.</span></a>
+<nav class="pages"><a href="quickstart.html">Quickstart</a><a href="guide.html">Guide</a><a href="install-reference.html">Installing</a><a href="rsp.html">Rubin Science Platform</a><a href="terminal-reference.html">In a terminal</a><a href="threads.html">Threads and sharing</a><a href="troubleshooting.html">Troubleshooting</a><a href="uninstall.html">Uninstall</a></nav>
+<a class="install-btn" href="install/">Install</a>
+</div></header>
+<div class="wrap">
+<main>
+<h1>cosci mutable-surface manifest</h1>
+<p>--- title: "cosci mutable-surface manifest" status: active tags: [cosci, governance, manifest] last_updated: "2026-10-20" ---</p>
+<p>The boundary for changes to an installed cosci harness (<code>~/.cosci</code>, see <a href="harness.html">harness.md</a>): what may change, what never may, and what enforces each line. An agent in a cosci session takes its authority from this file; an edit outside the may-touch list is invalid. A change to never-touch code fails the harness check (<code>cosci harness check</code>), so <code>cosci harness tag</code> refuses it.</p>
+<h2 id="the-invariant">The invariant</h2>
+<p>The agent never applies a change on its own. Every change takes one path: the person decides the edit → it is applied under <code>~/.cosci</code> → the check passes (<code>cosci harness check</code>) → the person commits it (<code>cosci harness tag &lt;name&gt; --as &lt;handle&gt;</code>).</p>
+<p>An agent acts as the person's hands: once told what to change, it may apply the edit, run the check and show the diff (<code>cosci harness pending --patch</code>). It never tags, merges, switches (<code>cosci harness use</code>) or discards a harness unprompted. <code>cosci improve</code> puts its drafts on a branch <code>improve/&lt;time&gt;</code>; only the person merges them (<a href="improve.html">improve.md</a>).</p>
+<h2 id="may-touch">May touch</h2>
+<div class="table"><table><thead><tr><th>What</th><th>Where</th><th>Bounded to</th><th>Verified by</th></tr></thead><tbody><tr><td>Style examples</td><td><code>style.md</code> in a data repo</td><td>before/after examples and delete-list entries</td><td>the person reading it</td></tr><tr><td>Harness prompt wording</td><td><code>harness/&lt;agent&gt;.md</code> in the harness</td><td>phrasing, ordering, project conventions; never the recorded-turn loop, the permission grammar or the boundaries section</td><td>the <code>prompt-budget</code> check, then the person</td></tr><tr><td>Skill wording</td><td><code>skills/&lt;name&gt;/SKILL.md</code> in the harness</td><td>the instructions; never the <code>allowed-tools</code> line, <code>disable-model-invocation</code> on a human-only skill, or a step that removes the commit footer or a human-only act</td><td>the <code>skills-contract</code> and <code>skills-coverage</code> checks, then the person</td></tr></tbody></table></div>
+<h2 id="never-touch">Never touch</h2>
+<div class="table"><table><thead><tr><th>What</th><th>Why</th></tr></thead><tbody><tr><td>Recorded turns (<code>discussions/</code> in every data repo)</td><td>The record is the ground truth; an agent that could edit it could rewrite what it is judged against</td></tr><tr><td>Permission descriptors (<code>thread_defaults</code>, <code>&lt;thread&gt;.meta.yml</code>, <code>default_write</code>)</td><td>They are the threads' permissions; only the person types grants (<code>cosci grant</code>)</td></tr><tr><td>The check and its tests (<code>tools/check_harness.py</code>, <code>tests/</code>)</td><td>The verifier may not rewrite itself</td></tr><tr><td>The engine's write path (<code>ccm_core/engine.py</code>, <code>ccm_core/config.py</code>, <code>mcp/server.py</code>) and the interpreter floor (<code>ccm_pyfloor.py</code>)</td><td>Recording and the permission check are enforced there</td></tr><tr><td>Turn telemetry (<code>ccm_core/telemetry.py</code>)</td><td>It observes the agent; an agent that could change its observer could hide from it</td></tr><tr><td>The local <code>config.yml</code> (<code>~/.cosci-data/config.yml</code>)</td><td>The repos, whether each is private or shared, and the defaults are the person's call</td></tr><tr><td>This manifest and <a href="triage.html">triage.md</a></td><td>The boundary may not move itself</td></tr></tbody></table></div>
+<p>An engineer changes these in the cosci repository, as an ordinary commit with tests, and they reach people in a release (<code>cosci update</code>).</p>
+<h2 id="enforcement">Enforcement</h2>
+<ul><li><strong>Every commit goes through the check.</strong> <code>cosci harness tag</code> and <code>cosci harness merge</code> run <code>tools/check_harness.py</code> first and refuse when it fails; a merge result that fails is undone.</li><li><strong>Never-touch code.</strong> The <code>never-touch</code> check fails if <code>tools/check_harness.py</code>, <code>tests/</code>, <code>ccm_core/engine.py</code>, <code>ccm_core/config.py</code>, <code>mcp/server.py</code>, <code>ccm_core/telemetry.py</code>, <code>ccm_pyfloor.py</code>, this manifest or <code>triage.md</code> differ from the base release, so such a change cannot be tagged.</li><li><strong>Permissions.</strong> <code>default_write: deny</code> and person-only grants protect them. The agent has no grant tool, and the grant skill carries <code>disable-model-invocation: true</code>, enforced by <code>skills-coverage</code>.</li><li><strong>Recorded turns and the local config</strong> are outside the harness, so the check skips them; the rules above protect them.</li><li><strong>Audit.</strong> A tag made with <code>--as &lt;handle&gt;</code> names the authorizing person in the tag message, and the harness's git history keeps every change.</li></ul>
+<h2 id="changing-this-manifest">Changing this manifest</h2>
+<p>Only an engineer changes it, in the cosci repository, with the reasoning in the commit message, and it reaches installed harnesses in a release. An agent may only ask for a change, as prose in a thread.</p>
+<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.194906), the same guides that come with CoSci.</p>
+</main>
+<aside class="toc"><b>On this page</b><a class="l2" href="#the-invariant">The invariant</a><a class="l2" href="#may-touch">May touch</a><a class="l2" href="#never-touch">Never touch</a><a class="l2" href="#enforcement">Enforcement</a><a class="l2" href="#changing-this-manifest">Changing this manifest</a></aside>
+</div>
+</body>
+</html>
