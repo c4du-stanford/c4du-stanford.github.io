@@ -52,7 +52,7 @@ git -C ~/.cosci branch -D improve/&lt;time&gt;      # or delete them</code></pre
 <p>Dry runs, estimates, runs with nothing to change and runs that stop on an error make no branch and change nothing. A run stops, saying why and what to do, when for example nothing is recorded in the window (widen <code>--since</code> or <code>--threads</code>), there is no git identity, or the agent call fails. Exit status: 0 for a passing branch, dry run, estimate or nothing to change; 1 for an error or failing branch; 2 for bad arguments.</p>
 <h2 id="the-log">The log</h2>
 <p>Each run is logged on this machine under the data root, in <code>~/.cosci-data/improve/</code>: one line in <code>runs.jsonl</code> (past 256 KB the older half is dropped) and the full record, every proposal kept or dropped and why, as <code>&lt;time&gt;.json</code>. <code>cosci status</code> shows the last run on its <code>improve</code> line.</p>
-<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.203227), the same guides that come with CoSci.</p>
+<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.203419), the same guides that come with CoSci.</p>
 </main>
 <aside class="toc"><b>On this page</b><a class="l2" href="#what-it-reads">What it reads</a><a class="l2" href="#who-is-asked">Who is asked</a><a class="l2" href="#what-code-checks">What code checks</a><a class="l2" href="#what-it-makes">What it makes</a><a class="l2" href="#the-log">The log</a></aside>
 </div>
