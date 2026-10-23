@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Uninstall · CoSci</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=7f7c8c2971">
 <script>try{var t=localStorage.getItem('cosci.theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 </head>
 <body>
 <header class="top"><div class="in">
-<a class="brand" href="./" aria-label="CoSci home"><svg xmlns="http://www.w3.org/2000/svg" viewBox="32 22 56 56" aria-hidden="true">
+<a class="brand" href="./" aria-label="CoSci home"><svg xmlns="http://www.w3.org/2000/svg" viewBox="32 22 56 56" width="36" height="36" aria-hidden="true">
 <defs><linearGradient id="t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2c3030"/><stop offset="1" stop-color="#161919"/></linearGradient></defs>
 <rect x="32.5" y="22.5" width="55" height="55" rx="11" fill="url(#t)" stroke="#2f3535"/>
 <g fill="#fff" fill-opacity="0.45"><circle cx="45.4" cy="36.6" r="0.7"/><circle cx="75.7" cy="34.3" r="0.8"/><circle cx="72.3" cy="44.4" r="0.6"/><circle cx="43.2" cy="46.6" r="0.6"/><circle cx="78.5" cy="66.2" r="0.6"/><circle cx="48.8" cy="67.9" r="0.6"/><circle cx="66.7" cy="31.5" r="0.6"/></g>
@@ -18,9 +18,9 @@
 </svg><span class="name"><b>CoSci<i>●</i></b><small>RUBIN CO-SCIENTIST</small></span></a>
 <nav class="pages" id="pages"><a href="quickstart.html">Quickstart</a><a href="guide.html">Guide</a><a href="install-reference.html">Installing</a><a href="rsp.html">RSP</a><a href="terminal-reference.html">Terminal</a><a href="threads.html">Threads</a><a href="troubleshooting.html">Troubleshooting</a><a href="uninstall.html" class="on">Uninstall</a></nav>
 <div class="tools">
-<button class="icon-btn" id="theme-btn" type="button" aria-label="Change theme"><svg class="i-auto" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor"/></svg><svg class="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3.2" fill="currentColor"/><g stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M3.4 12.6l1.3-1.3M11.3 4.7l1.3-1.3"/></g></svg><svg class="i-moon" viewBox="0 0 16 16"><path d="M13.5 10.2A6 6 0 0 1 5.8 2.5a6 6 0 1 0 7.7 7.7z" fill="currentColor"/></svg><span>Auto</span></button>
+<button class="icon-btn" id="theme-btn" type="button" aria-label="Change theme"><svg class="i-auto" viewBox="0 0 16 16" width="16" height="16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor"/></svg><svg class="i-sun" viewBox="0 0 16 16" width="16" height="16" style="display:none"><circle cx="8" cy="8" r="3.2" fill="currentColor"/><g stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M3.4 12.6l1.3-1.3M11.3 4.7l1.3-1.3"/></g></svg><svg class="i-moon" viewBox="0 0 16 16" width="16" height="16" style="display:none"><path d="M13.5 10.2A6 6 0 0 1 5.8 2.5a6 6 0 1 0 7.7 7.7z" fill="currentColor"/></svg><span>Auto</span></button>
 <a class="install-btn" href="install/">Install</a>
-<button class="icon-btn" id="menu-btn" type="button" aria-label="Pages" aria-controls="pages" aria-expanded="false"><svg viewBox="0 0 16 16"><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2.5 4h11M2.5 8h11M2.5 12h11"/></g></svg></button>
+<button class="icon-btn" id="menu-btn" type="button" aria-label="Pages" aria-controls="pages" aria-expanded="false"><svg viewBox="0 0 16 16" width="16" height="16"><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2.5 4h11M2.5 8h11M2.5 12h11"/></g></svg></button>
 </div>
 </div></header>
 <div class="wrap">
@@ -52,7 +52,7 @@ command -v cosci       # prints nothing</code></pre>
 <p>On disk: every data repo under <code>~/.cosci-data/&lt;owner&gt;__&lt;repo&gt;</code>, the configuration <code>~/.cosci-data/config.yml</code>, the learner log <code>~/.cosci-data/learn.log</code> and, after a clone install, the source clone <code>~/.cosci-src</code>. Your private lab and your shared labs on GitHub are untouched. The data repos are plain git repos; read them with any editor, or run:</p>
 <pre><code>git -C ~/.cosci-data/local__notes log --stat</code></pre>
 <p>Run the install again any time (download the installer from the <a href="https://c4du-stanford.github.io/rubin-cosci/install/">install page</a> and run it, or install.sh from your clone) and cosci picks the repos up again, reporting each as <code>(up to date)</code> or <code>(exists)</code>. To remove a local clone, delete it; its GitHub repo stays.</p>
-<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.200433), the same guides that come with CoSci.</p>
+<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.200928), the same guides that come with CoSci.</p>
 </main>
 <aside class="toc"><b>On this page</b><a class="l2" href="#1-remove-the-harness-and-the-command">1. Remove the harness and the command</a><a class="l3" href="#python-the-github-cli-and-your-sign-ins">Python, the GitHub CLI and your sign-ins</a><a class="l2" href="#2-check-it-is-gone">2. Check it is gone</a><a class="l2" href="#what-is-kept">What is kept</a></aside>
 </div>
@@ -62,6 +62,7 @@ command -v cosci       # prints nothing</code></pre>
   var names={auto:'Auto',light:'Light',dark:'Dark'}, order=['auto','light','dark'];
   function cur(){ return root.getAttribute('data-theme')||'auto'; }
   function show(){ var c=cur(); b.setAttribute('data-mode',c); b.querySelector('span').textContent=names[c];
+    ['auto','sun','moon'].forEach(function(k,i){ var e=b.querySelector('.i-'+k); if(e) e.style.display=(order[i]===c)?'block':'none'; });
     b.title='Theme: '+names[c]+' (click to change)'; }
   b.addEventListener('click',function(){
     var n=order[(order.indexOf(cur())+1)%3];

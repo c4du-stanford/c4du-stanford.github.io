@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Guide · CoSci</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=7f7c8c2971">
 <script>try{var t=localStorage.getItem('cosci.theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 </head>
 <body>
 <header class="top"><div class="in">
-<a class="brand" href="./" aria-label="CoSci home"><svg xmlns="http://www.w3.org/2000/svg" viewBox="32 22 56 56" aria-hidden="true">
+<a class="brand" href="./" aria-label="CoSci home"><svg xmlns="http://www.w3.org/2000/svg" viewBox="32 22 56 56" width="36" height="36" aria-hidden="true">
 <defs><linearGradient id="t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2c3030"/><stop offset="1" stop-color="#161919"/></linearGradient></defs>
 <rect x="32.5" y="22.5" width="55" height="55" rx="11" fill="url(#t)" stroke="#2f3535"/>
 <g fill="#fff" fill-opacity="0.45"><circle cx="45.4" cy="36.6" r="0.7"/><circle cx="75.7" cy="34.3" r="0.8"/><circle cx="72.3" cy="44.4" r="0.6"/><circle cx="43.2" cy="46.6" r="0.6"/><circle cx="78.5" cy="66.2" r="0.6"/><circle cx="48.8" cy="67.9" r="0.6"/><circle cx="66.7" cy="31.5" r="0.6"/></g>
@@ -18,9 +18,9 @@
 </svg><span class="name"><b>CoSci<i>●</i></b><small>RUBIN CO-SCIENTIST</small></span></a>
 <nav class="pages" id="pages"><a href="quickstart.html">Quickstart</a><a href="guide.html" class="on">Guide</a><a href="install-reference.html">Installing</a><a href="rsp.html">RSP</a><a href="terminal-reference.html">Terminal</a><a href="threads.html">Threads</a><a href="troubleshooting.html">Troubleshooting</a><a href="uninstall.html">Uninstall</a></nav>
 <div class="tools">
-<button class="icon-btn" id="theme-btn" type="button" aria-label="Change theme"><svg class="i-auto" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor"/></svg><svg class="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3.2" fill="currentColor"/><g stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M3.4 12.6l1.3-1.3M11.3 4.7l1.3-1.3"/></g></svg><svg class="i-moon" viewBox="0 0 16 16"><path d="M13.5 10.2A6 6 0 0 1 5.8 2.5a6 6 0 1 0 7.7 7.7z" fill="currentColor"/></svg><span>Auto</span></button>
+<button class="icon-btn" id="theme-btn" type="button" aria-label="Change theme"><svg class="i-auto" viewBox="0 0 16 16" width="16" height="16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor"/></svg><svg class="i-sun" viewBox="0 0 16 16" width="16" height="16" style="display:none"><circle cx="8" cy="8" r="3.2" fill="currentColor"/><g stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M3.4 12.6l1.3-1.3M11.3 4.7l1.3-1.3"/></g></svg><svg class="i-moon" viewBox="0 0 16 16" width="16" height="16" style="display:none"><path d="M13.5 10.2A6 6 0 0 1 5.8 2.5a6 6 0 1 0 7.7 7.7z" fill="currentColor"/></svg><span>Auto</span></button>
 <a class="install-btn" href="install/">Install</a>
-<button class="icon-btn" id="menu-btn" type="button" aria-label="Pages" aria-controls="pages" aria-expanded="false"><svg viewBox="0 0 16 16"><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2.5 4h11M2.5 8h11M2.5 12h11"/></g></svg></button>
+<button class="icon-btn" id="menu-btn" type="button" aria-label="Pages" aria-controls="pages" aria-expanded="false"><svg viewBox="0 0 16 16" width="16" height="16"><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2.5 4h11M2.5 8h11M2.5 12h11"/></g></svg></button>
 </div>
 </div></header>
 <div class="wrap">
@@ -75,7 +75,7 @@
 <h2 id="6-keep-going">6. Keep going</h2>
 <ul><li><strong>Learning:</strong> after a conversation, CoSci learns statements from it in the background, on your own agent account. Turn it off in Settings at install, or see <a href="configuration.html#learning">configuration</a>.</li><li><strong>Updates:</strong> <code>cosci update --check</code>, then <code>cosci update</code>. Your labs and settings are kept. Start a new agent session afterwards.</li><li><strong>Status:</strong> <code>cosci status</code> shows what's installed and which labs you have.</li><li><strong>Improving CoSci:</strong> <code>cosci improve</code> proposes small changes to the agent's instructions from your experience (<a href="improve.html">how</a>).</li></ul>
 <p>A two-person example is in the <a href="walkthrough.html">walkthrough</a>. Problems: <a href="troubleshooting.html">troubleshooting</a>.</p>
-<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.200433), the same guides that come with CoSci.</p>
+<p class="foot">CoSci, the Rubin Co-Scientist, from the Center for Decoding the Universe at Stanford. These pages match the release of October 23, 2026 (2026.10.23.200928), the same guides that come with CoSci.</p>
 </main>
 <aside class="toc"><b>On this page</b><a class="l3" href="#words-used-here">Words used here</a><a class="l2" href="#1-before-you-install">1. Before you install</a><a class="l2" href="#2-install-cosci">2. Install cosci</a><a class="l3" href="#what-the-installer-asks">What the installer asks</a><a class="l3" href="#what-is-installed">What is installed</a><a class="l2" href="#3-labs">3. Labs</a><a class="l3" href="#join-an-existing-lab">Join an existing lab</a><a class="l3" href="#start-a-new-lab">Start a new lab</a><a class="l3" href="#work-with-several-labs">Work with several labs</a><a class="l2" href="#4-the-cosci-window-mac">4. The CoSci window (Mac)</a><a class="l2" href="#5-in-a-terminal">5. In a terminal</a><a class="l2" href="#6-keep-going">6. Keep going</a></aside>
 </div>
@@ -85,6 +85,7 @@
   var names={auto:'Auto',light:'Light',dark:'Dark'}, order=['auto','light','dark'];
   function cur(){ return root.getAttribute('data-theme')||'auto'; }
   function show(){ var c=cur(); b.setAttribute('data-mode',c); b.querySelector('span').textContent=names[c];
+    ['auto','sun','moon'].forEach(function(k,i){ var e=b.querySelector('.i-'+k); if(e) e.style.display=(order[i]===c)?'block':'none'; });
     b.title='Theme: '+names[c]+' (click to change)'; }
   b.addEventListener('click',function(){
     var n=order[(order.indexOf(cur())+1)%3];
